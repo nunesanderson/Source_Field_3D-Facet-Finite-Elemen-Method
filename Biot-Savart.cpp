@@ -44,7 +44,7 @@ vector<double> BiotSavart::biotSavartEquation(vector <double> fieldPoint, vector
 BiotSavart::~BiotSavart() {}
 
 vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double current_Density, vector<double> centerPosition, int alongAxis, GetMesh mesh, vector<vector<double>> gaussPointsData, string filePath) {
-	
+
 	Messages messages;
 	messages.logMessage("BiotSavart - Solid domain integration");
 	//Get the mesh information
@@ -111,9 +111,9 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 					//Point to get H
 					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
 					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, currentDensityVec, 1);
-					Hresults[pointCounter][0] += dHPoint[0]* weight*detJac;
-					Hresults[pointCounter][1] += dHPoint[1]*weight*detJac;
-					Hresults[pointCounter][2] += dHPoint[2]*weight*detJac;
+					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
+					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
+					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
 				}
 
 			}
@@ -128,8 +128,91 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 	return Hresults;
 }
 
-vector<vector<double>>  BiotSavart::integrateLine(GetMesh mesh, vector<vector<double>> gaussPointsData, string path) {
+void BiotSavart::integrateTwoD(vector<vector<double>> &Hresults, int volID, double current_Density, GetMesh mesh, vector<vector<double>> gaussPointsData, string filePath)
+{
+	Messages messages;
+	messages.logMessage("BiotSavart - 2D domain integration");
+	//Get the mesh information
+	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
+	vector<vector<int>> elemNodes = mesh.elemNodes;
+	vector<int> elemTypes = mesh.elemTypes;
+	vector<int> physicalTag = mesh.physicalTags;
+	vector<int> elementaryTags = mesh.elementaryTags;
+	vector<int> numNodesPerElem = mesh.numNodesPerElement;
+	int numNodes = mesh.numNodes;
+	int numElements = mesh.numElements;
 
+	//classes instantiation
+	Operations oper;
+	Vector1D thisMath;
+
+	//Initialize data structures
+	int numberGaussPoints = gaussPointsData.size();
+	vector<vector<double>> currentDensityListCoord;
+	vector<vector<double>> currentDensity;
+
+	Matrix jac(3, 3);
+
+	//Types of elements
+	vector<int> validElemTypes = { 2,3,9,10};
+
+	//Integration loop
+	for (int i = 0; i < numElements; i++)
+	{
+		int thisElemType = elemTypes[i];
+
+		if ((std::find(validElemTypes.begin(), validElemTypes.end(), thisElemType) != validElemTypes.end()) && (physicalTag[i] == volID))
+		{
+
+			// loop for the Gauss points
+			GaussLegendrePoints thisElemGauss(thisElemType);
+			vector<double> dHElement = { 0, 0, 0 };
+			for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
+			{
+
+				//Integration point @UVP
+				vector<double>pFielduv;
+				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+
+				//Integration point @XYZ
+				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
+
+				//current density vector
+				vector<double> currentDensityVec = { 0 ,0,current_Density };
+
+				//save the current density plot
+				currentDensity.push_back(currentDensityVec);
+				currentDensityListCoord.push_back(pFieldxy);
+
+				// Get dH using the Biot-Savart equation
+				jac = oper.Jacobian(thisElemType, i, mesh, pFielduv);
+				double detJac = abs(jac.Det_3x3());
+				double weight = thisElemGauss.weights[pointCounter];
+
+				for (int pointCounter = 0; pointCounter < numberGaussPoints; pointCounter++)
+				{
+					//Point to get H
+					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
+					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, currentDensityVec, 1);
+					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
+					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
+					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
+				}
+
+			}
+
+		}
+	}
+	messages.logMessage("BiotSavart - 2D domain integration: Done");
+
+	PostProcessing post;
+	post.writeVectorField(currentDensityListCoord, currentDensity, "Current Density", filePath + "\\results\\Gmsh_Current_Density.txt");
+
+}
+
+vector<vector<double>>  BiotSavart::integrateLine(double current,int volID,GetMesh mesh, vector<vector<double>> gaussPointsData, string path) {
+	Messages messages;
+	messages.logMessage("BiotSavart - Line integration");
 	//Get the mesh information
 	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
 	vector<vector<int>> elemNodes = mesh.elemNodes;
@@ -151,89 +234,62 @@ vector<vector<double>>  BiotSavart::integrateLine(GetMesh mesh, vector<vector<do
 	vector<vector<double>> dlListField;
 
 	bool plotDl = true;
-	double current = 1;
 
-	// Loop to get H for all the points at gaussPointsData
-	for (int pointCounter = 0; pointCounter < numberGaussPoints; pointCounter++)
+	//Integration loop
+	for (int i = 0; i < numElements; i++)
 	{
-		//Point to get H
-		vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
+		vector<vector<double>> path;
 
-		//H result at point P_coord
-		vector <double> Hp = { 0, 0, 0 };
-
-		//Integratio loop
-		for (int i = 0; i < numElements; i++)
+		int thisElemType = elemTypes[i];
+		if (physicalTag[i]==volID && (thisElemType == 1 || thisElemType == 8))
 		{
-			vector<vector<double>> path;
 
-			int thisElemType = elemTypes[i];
-			if (thisElemType == 1 || thisElemType == 8)
+		// loop for the Gauss points
+			GaussLegendrePoints thisElemGauss(thisElemType);
+			for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
 			{
+				//Integration point @UVP
+				vector<double>pFielduv;
+				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+				double weight = thisElemGauss.weights[pointCounter];
 
-				// Coordinates for first and last element points
-				int nodeA = elemNodes[i][0];
-				int nodeB = elemNodes[i][1];
+				//Integration point @XYZ
+				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
 
-				vector <double> dl_start;
-				dl_start = nodesCoordinates[nodeA];
-				vector <double> dl_end;
-				dl_start = nodesCoordinates[nodeB];
-				path.push_back(dl_start);
+				//Jacobian evaluated at Gauss point
+				Matrix jac = oper.Jacobian(thisElemType, i, mesh, pFielduv);
+				double detJac = oper.getDetJac1D(jac);
+				//dl vector
+				vector<double> dlVect = { jac.mat[0][0], jac.mat[0][1], jac.mat[0][2] };
+				vector<double> dlUnitary = thisMath.multiScal(dlVect, 1. / thisMath.Abs(dlVect));
 
-				// loop for the Gauss points
-				GaussLegendrePoints thisElemGauss(thisElemType);
-				vector<double> dH = { 0, 0, 0 };
-				for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
+				//save the information to plot the dl
+				if (plotDl)
 				{
-					//Integration point @UVP
-					vector<double>pFielduv;
-					pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
-
-					//Integration point @XYZ
-					vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
-
-					//Jacobian evaluated at Gauss point
-					Matrix jac = oper.Jacobian(thisElemType, i, mesh, pFielduv);
-
-					//dl vector
-					vector<double> dlVect = { jac.mat[0][0], jac.mat[0][1], jac.mat[0][2] };
-					vector<double> dlUnitary = thisMath.multiScal(dlVect, 1. / thisMath.Abs(dlVect));
-
-					//save the informqtion to plot the dl
-					if (plotDl)
-					{
-						dlListField.push_back(dlUnitary);
-						dlListCoord.push_back(pFieldxy);
-					}
-
-					path.push_back(pFieldxy);
-					dH = thisMath.sum(dH, biotSavartEquation(P_coord, pFieldxy, dlUnitary, current));
+					dlListField.push_back(dlUnitary);
+					dlListCoord.push_back(pFieldxy);
 				}
 
-				//Get the lenght of the line element
-				path.push_back(dl_end);
-				double lenght = 0;
-				for (int i = 0; i < path.size() - 1; i++)
+				for (int pointCounter = 0; pointCounter < numberGaussPoints; pointCounter++)
 				{
-					lenght += thisMath.distance(path[i], path[i + 1]);
+					//Point to get H
+					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
+					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, dlUnitary, current);
+					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
+					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
+					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
 				}
-
-				//Integration sum
-				dH = thisMath.multiScal(dH, 1.0 / (double)thisElemGauss.pointsCoordinates.rows *lenght);
-				Hp = thisMath.sum(Hp, dH);
-			}
-			else
-			{
-				break;
 			}
 		}
-		Hresults[pointCounter] = Hp;
+		else
+		{
+			break;
+		}
 	}
-
 
 	PostProcessing teste;
 	teste.writeVectorField(dlListCoord, dlListField, "dl's", path + "\\results\\dl.txt");
 
+	messages.logMessage("BiotSavart - Line integration: Done");
 	return Hresults;
 }

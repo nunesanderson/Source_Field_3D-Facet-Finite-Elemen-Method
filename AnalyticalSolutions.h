@@ -16,6 +16,7 @@ class BiotSavartAnalyt
 {
 public:
 	vector<double> getHcoil(double radius,vector<double> listZPos, double len,double current,double turns);
+	vector<double> getHCurrentLoop(double radius, vector<double> listZPos, double current);
 
 private:
 

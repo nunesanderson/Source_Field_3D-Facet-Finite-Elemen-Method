@@ -32,6 +32,10 @@ Matrix ShapeFunctions::GetNodalShapeFunction(int ElemType, double u, double v, d
 		ans = nodalLineFirstOrder(u);
 		break;
 
+	case 2: //First order triangle
+		ans =nodalTriangleFirstOrder(u,v);
+		break;
+
 	case 4: //First order tetrahedral
 		ans=nodalTetrahedralFirstOrder(u, v, p);
 		break;
@@ -43,6 +47,11 @@ Matrix ShapeFunctions::GetNodalShapeFunction(int ElemType, double u, double v, d
 	case 8: //Second order line
 		ans=nodalLineSecondOrder(u);
 		break;
+
+	case 9: //Second order triangle
+		ans = nodalTriangleSecondOrder(u,v);
+		break;
+
 	case 11: // Second order tetrahedral
 		ans=nodalTetrahedralSecondOrder(u, v, p);
 		break;
@@ -74,8 +83,36 @@ Matrix ShapeFunctions::nodalLineSecondOrder(double u) {
 	return ans;
 }
 
-Matrix ShapeFunctions::nodalTetrahedralFirstOrder(double u, double v, double p) {
+Matrix ShapeFunctions::nodalTriangleFirstOrder(double u, double v)
+{
 	// Ref Ida&Bastos, pg 319, table 8.9
+	Matrix ans(1, 3);
+
+	ans.mat[0][0] = 1.0 - u - v;
+	ans.mat[0][1] = u;
+	ans.mat[0][2] = v;
+
+	return ans;
+}
+
+Matrix ShapeFunctions::nodalTriangleSecondOrder(double u, double v)
+{
+	// Ref Ida&Bastos, pg 316, table 8.5
+	Matrix ans(1, 6);
+
+	double t = 1.0 - u - v;
+	ans.mat[0][0] = -t*(1.0 - 2.0*t);
+	ans.mat[0][1] = 4.0*u*t;
+	ans.mat[0][2] = -u*(1.0 - 2.0*u);
+	ans.mat[0][3] = 4.0*u*v;
+	ans.mat[0][4] = -v*(1.0 - 2.0*v);
+	ans.mat[0][5] = 4.0*v*t;
+
+	return ans;
+}
+
+Matrix ShapeFunctions::nodalTetrahedralFirstOrder(double u, double v, double p) {
+	// Ref Ida&Bastos, pg 315, table 8.7
 	Matrix ans(1, 4);
 
 	ans.mat[0][0] = 1.0 - u - v - p;
@@ -143,6 +180,10 @@ Matrix ShapeFunctions::GetGradNodalShapeFunction(int ElemType, double u, double 
 		ans=gradNodalLineFirstOrder();
 		break;
 
+	case 2: //First order triangle
+		ans = gradNodalTriangleFirstOrder();
+		break;
+
 	case 4: //First order tetrahedral
 		ans=gradNodalTetrahedralFirstOrder();
 		break;
@@ -154,6 +195,11 @@ Matrix ShapeFunctions::GetGradNodalShapeFunction(int ElemType, double u, double 
 	case 8://Second order line
 		ans=gradNodalLineSecondOrder(u);
 		break;
+
+	case 9://Second order triangle
+		ans = gradNodalTriangleSecondOrder(u,v);
+		break;
+
 	case 11://Second order tetrahedral
 		ans=gradNodalTetrahedralSecondOrder(u, v, p);
 		break;
@@ -172,17 +218,49 @@ Matrix ShapeFunctions::gradNodalLineFirstOrder() {
 	ans.mat[2][0] = 0.0;	ans.mat[2][1] = 0.0;
 
 	return ans;
-
 }
 
 Matrix ShapeFunctions::gradNodalLineSecondOrder(double u) {
 	Matrix ans (3, 3);
-	ans.mat[0][0] = (-1.0 + 2 * u) / 2.0;	ans.mat[0][1] = (1.0 + 2 * u) / 2.0;	ans.mat[0][2] = -2 * u;
+	ans.mat[0][0] = (-1.0 + 2.0 * u) / 2.0;	ans.mat[0][1] = (1.0 + 2 * u) / 2.0;	ans.mat[0][2] = -2 * u;
 	ans.mat[1][0] = 0.0;					ans.mat[1][1] = 0.0;					ans.mat[1][2] = 0.0;
 	ans.mat[2][0] = 0.0;					ans.mat[2][1] = 0.0;					ans.mat[2][2] = 0.0;
 
 	return ans;
 
+}
+Matrix ShapeFunctions::gradNodalTriangleFirstOrder()
+{
+	/*ref:
+	Ida&Bastos, pg 315, table 8.4*/
+
+	Matrix ans(3, 3);
+	ans.mat[0][0] = -1.0;	ans.mat[0][1] = 1.0;	ans.mat[0][2] = 0.0;	
+	ans.mat[1][0] = -1.0;	ans.mat[1][1] = 0.0;	ans.mat[1][2] = 1.0;	
+
+	return ans;
+}
+Matrix ShapeFunctions::gradNodalTriangleSecondOrder(double u, double v)
+{
+	Matrix ans(3, 6);
+	double t = 1.0 - u - v;
+
+	//gradNu
+	ans.mat[0][0] = 1.0 - 4.0 * t;
+	ans.mat[0][1] = 4.0 * (t - u);
+	ans.mat[0][2] = -1.0 + 4.0 * u;
+	ans.mat[0][3] = 4.0 * v;
+	ans.mat[0][4] = 0.0;
+	ans.mat[0][5] = -4.0 * v;
+
+	//gradNv
+	ans.mat[1][0] = 1.0 - 4.0 * t;
+	ans.mat[1][1] = -4.0 * u;
+	ans.mat[1][2] = 0.0;
+	ans.mat[1][3] = 4.0 * u;
+	ans.mat[1][4] = -1.0 + 4.0 * v;
+	ans.mat[1][5] = 4.0 * (t - v);
+	return ans;
 }
 Matrix ShapeFunctions::gradNodalTetrahedralFirstOrder() {
 
@@ -289,6 +367,10 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 		lineOnePoint();
 		break;
 
+	case 2: //First order triangle
+		triangleThreePointsInside();
+		break;
+
 	case 4: //First order tetrahedral
 		tetrahedralFourPoinst();
 		break;
@@ -300,6 +382,11 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 	case 8://Second order line
 		lineTwoPoints();
 		break;
+
+	case 9://Second order triangle
+		triangleSevenPointsInside();
+		break;
+
 	case 11: //First order tetrahedral
 		tetrahedralFivePoinst();
 		break;
@@ -318,17 +405,73 @@ void GaussLegendrePoints::lineTwoPoints() {
 	pointsCoordinates.mat[0][0] = -k;	pointsCoordinates.mat[0][1] = 0.0;	pointsCoordinates.mat[0][2] = 0.0;
 	pointsCoordinates.mat[1][0] = k;	pointsCoordinates.mat[1][1] = 0.0;	pointsCoordinates.mat[1][2] = 0.0;
 
-	weights.push_back(1);
-	weights.push_back(1);
+	weights.push_back(1.0);
+	weights.push_back(1.0);
 }
 
 void GaussLegendrePoints::lineOnePoint() {
 	pointsCoordinates.resize(1, 3);
 	pointsCoordinates.mat[0][0] = 0.0;	pointsCoordinates.mat[0][1] = 0.0;	pointsCoordinates.mat[0][2] = 0.0;
 	
-	weights.push_back(1);
+	weights.push_back(2.0);
 }
 
+void GaussLegendrePoints::triangleThreePointsInside()
+{
+	pointsCoordinates.resize(3, 3);
+	double one_six = 1.0 / 6.0;
+	double two_three = 2.0 / 3.0;
+	pointsCoordinates.mat[0][0] = one_six;		pointsCoordinates.mat[0][1] = one_six;		pointsCoordinates.mat[0][2] = 0;
+	pointsCoordinates.mat[1][0] = two_three;	pointsCoordinates.mat[1][1] = one_six;		pointsCoordinates.mat[1][2] = 0;
+	pointsCoordinates.mat[2][0] = one_six;		pointsCoordinates.mat[2][1] = two_three;	pointsCoordinates.mat[2][2] = 0;
+	
+	weights.push_back(1.0 / 6.0);
+	weights.push_back(1.0 / 6.0);
+	weights.push_back(1.0 / 6.0);
+	
+}
+
+void GaussLegendrePoints::triangleSevenPointsInside()
+{
+	pointsCoordinates.resize(7, 3);
+	double a = 0.470142064;
+	double b = 0.10128650;
+	pointsCoordinates.mat[0][0] = 1.0 / 3.0;		pointsCoordinates.mat[0][1] = 1.0 / 3.0;		pointsCoordinates.mat[0][2] = 0;
+	pointsCoordinates.mat[1][0] = a;				pointsCoordinates.mat[1][1] = a;				pointsCoordinates.mat[1][2] = 0;
+	pointsCoordinates.mat[2][0] = 1.0 - 2.0*a;		pointsCoordinates.mat[2][1] = a;				pointsCoordinates.mat[2][2] = 0;
+	pointsCoordinates.mat[3][0] = a;				pointsCoordinates.mat[3][1] = 1.0 - 2.0*a;		pointsCoordinates.mat[3][2] = 0;
+	pointsCoordinates.mat[4][0] = b;				pointsCoordinates.mat[4][1] = b;				pointsCoordinates.mat[4][2] = 0;
+	pointsCoordinates.mat[5][0] = 1.0 - 2.0*b;		pointsCoordinates.mat[5][1] = b;				pointsCoordinates.mat[5][2] = 0;
+	pointsCoordinates.mat[6][0] = b;				pointsCoordinates.mat[6][1] = 1.0 - 2 * b;		pointsCoordinates.mat[6][2] = 0;
+
+
+	weights.push_back(9.0 / 80.0);
+	weights.push_back(0.066197076);
+	weights.push_back(0.066197076);
+	weights.push_back(0.066197076);
+	weights.push_back(0.062969590);
+	weights.push_back(0.062969590);
+	weights.push_back(0.062969590);
+	
+}
+
+
+void GaussLegendrePoints::triangleFourPointsInside()
+{
+	pointsCoordinates.resize(4, 3);
+
+	pointsCoordinates.mat[0][0] = 0.333333333333333;		pointsCoordinates.mat[0][1] = 0.333333333333333;		pointsCoordinates.mat[0][2] = 0;
+	pointsCoordinates.mat[1][0] = 0.6;						pointsCoordinates.mat[1][1] = 0.2;						pointsCoordinates.mat[1][2] = 0;
+	pointsCoordinates.mat[2][0] = 0.2;						pointsCoordinates.mat[2][1] = 0.6;						pointsCoordinates.mat[2][2] = 0;
+	pointsCoordinates.mat[3][0] = 0.2;						pointsCoordinates.mat[3][1] = 0.2;						pointsCoordinates.mat[3][2] = 0;
+	
+
+	weights.push_back(-0.28125);
+	weights.push_back(.260416666666);
+	weights.push_back(.260416666666);
+	weights.push_back(.260416666666);
+
+}
 void GaussLegendrePoints::tetrahedralOnePoint() {
 
 	double k = 1.0 / 4.0;
@@ -533,6 +676,12 @@ Matrix Operations::Jacobian(int elemType, int elemID, GetMesh mesh, vector<doubl
 
 }
 
+double Operations::getDetJac1D(Matrix mat)
+{
+	double ans = sqrt(pow(mat.mat[0][0], 2) + pow(mat.mat[0][1], 2) + pow(mat.mat[0][2], 2));
+	return ans;
+}
+
 vector<int> GmshNodesNumbering::GetGmshNodesNumbering(int ElemType)
 {
 	vector<int> ans;
@@ -542,8 +691,20 @@ vector<int> GmshNodesNumbering::GetGmshNodesNumbering(int ElemType)
 		ans = GmshLineFirstOrder();
 		break;
 
+	case 2: //First order triangle
+		ans = GmshTriangleFirstOrder();
+		break;
+
 	case 4: //First order tetrahedral
 		ans = GmshTetrahedralFirstOrder();
+		break;
+
+	case 8://Second order line
+		ans = GmshLineSecondOrder();
+		break;
+
+	case 9://Second order triangle
+		ans = GmshTriangleSecondOrder();
 		break;
 
 	case 11://Second order tetrahedral
@@ -575,6 +736,24 @@ Matrix GmshNodesNumbering::ConvertToGmshNumbering(Matrix mat, vector<int> order)
 vector<int> GmshNodesNumbering::GmshLineFirstOrder()
 {
 	vector<int> ans = { 0,1 };
+	return ans;
+}
+
+vector<int> GmshNodesNumbering::GmshLineSecondOrder()
+{
+	vector<int> ans = { 0,1,2 };
+	return ans;
+}
+
+vector<int> GmshNodesNumbering::GmshTriangleFirstOrder()
+{
+	vector<int> ans = { 0,1,2 };
+	return ans;
+}
+
+vector<int> GmshNodesNumbering::GmshTriangleSecondOrder()
+{
+	vector<int> ans = {0,2,4,1,3,5};
 	return ans;
 }
 

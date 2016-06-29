@@ -24,11 +24,8 @@ int main()
 {
 	Messages messages;
 
-	double teste = pow(4, 0.5);
-	
 	TestsBiotSavart testBS;
-	testBS;
-
+	testBS.TwoD();
 
 	
 	//*******************************
@@ -41,6 +38,7 @@ int main()
 	//vector<int> IDs = mesh.defineBoundary(mesh, surf, vol, 2);
 	//mesh.writeMesh(mesh, "C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\24_Test boundary\\model2.msh", IDs);
 	
+	messages.logMessage("Finished!");
 	getchar();  
 	return 0;
 }

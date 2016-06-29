@@ -1,7 +1,7 @@
-﻿  Tests-Biot-Savart.cpp
+﻿  EMFET_SF.cpp
   Generating code
-  16 of 1016 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+  77 of 1006 functions ( 7.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+    16 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Release_64\EMFET_SF.exe

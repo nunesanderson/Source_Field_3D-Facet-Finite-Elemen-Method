@@ -18,3 +18,14 @@ vector<double> BiotSavartAnalyt::getHcoil(double radius, vector<double> listZPos
 	}
 	return ans;
 }
+
+vector<double> BiotSavartAnalyt::getHCurrentLoop(double radius, vector<double> listZPos, double current)
+{
+	vector<double>ans;
+	for each (double z in listZPos)
+	{
+		double k = 2*pow(pow(radius , 2) + pow(z, 2.0),3.0/2.0);
+		ans.push_back(current*pow(radius,2) / k);
+	}
+	return ans;
+}

@@ -15,7 +15,13 @@ Internal includes
 class TestsBiotSavart
 {
 public:
-	TestsBiotSavart();
+	void volumeDomain();
+	void currentLoop();
+	void TwoD();
+
+
+
+
 
 
 private:

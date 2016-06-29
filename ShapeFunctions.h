@@ -20,6 +20,11 @@ public:
 
 private:
 	vector<int> GmshLineFirstOrder();
+	vector<int> GmshLineSecondOrder();
+
+	vector<int> GmshTriangleFirstOrder();
+	vector<int> GmshTriangleSecondOrder();
+
 	vector<int> GmshTetrahedralFirstOrder();
 	vector<int> GmshTetrahedralSecondtOrder();
 
@@ -57,16 +62,25 @@ private:
 	Matrix  nodalLineFirstOrder(double u);
 	Matrix  nodalLineSecondOrder(double u);
 
+	Matrix  nodalTriangleFirstOrder(double u,double v);
+	Matrix  nodalTriangleSecondOrder(double u, double v);
+
+
 	Matrix  nodalTetrahedralFirstOrder(double u, double v, double p);
 	Matrix  nodalTetrahedralSecondOrder(double u, double v, double p);
+
 	Matrix  nodalHexahedralFirstOrder(double u, double v, double p);
 
 	// Gradient of nodal shape functions
 	Matrix  gradNodalLineFirstOrder();
-
 	Matrix  gradNodalLineSecondOrder(double u);
+	
+	Matrix  gradNodalTriangleFirstOrder();
+	Matrix  gradNodalTriangleSecondOrder(double u, double v);
+	
 	Matrix  gradNodalTetrahedralFirstOrder();
 	Matrix  gradNodalTetrahedralSecondOrder(double u, double v, double p);
+
 	Matrix  gradNodalHexahedralFirstOrder(double u, double v, double p);
 };
 
@@ -102,9 +116,15 @@ public:
 private:
 	void lineTwoPoints();
 	void lineOnePoint();
+
+	void triangleThreePointsInside();
+	void triangleFourPointsInside();
+	void triangleSevenPointsInside();
+
 	void tetrahedralOnePoint();
 	void tetrahedralFourPoinst();
 	void tetrahedralFivePoinst();
+	
 	void hexahedralEightPoinstInside();
 
 };
@@ -139,7 +159,7 @@ public:
 	*/
 	vector<double> scalLocalToReal(int elemType, int elemID, GetMesh mesh, vector<double> point);
 	Matrix Jacobian(int elemType, int elemID, GetMesh mesh, vector<double> point);
-
+	double getDetJac1D(Matrix mat);
 
 };
 
