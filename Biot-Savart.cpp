@@ -20,7 +20,7 @@ Internal includes
 
 const double PI = 3.1415926535897;
 
-vector<double> BiotSavart::biotSavartEquation(vector <double> fieldPoint, vector <double> currentPoint, vector <double> dlUnitary, double current)
+vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, vector <double> currentPoint, vector <double> dlUnitary, double current)
 {
 	Vector1D thisMath;
 	vector<double> R = thisMath.subtract(fieldPoint, currentPoint);
@@ -35,6 +35,28 @@ vector<double> BiotSavart::biotSavartEquation(vector <double> fieldPoint, vector
 	{
 
 		k = current / (4.0*PI*pow(R_abs, 3.0));
+	}
+
+	vector<double> dH_P = thisMath.multiScal(vector_product, k);
+
+	return dH_P;
+}
+
+vector<double> BiotSavart::biotSavartEquationTwoD(vector <double> fieldPoint, vector <double> currentPoint, vector <double> dlUnitary, double current)
+{
+	Vector1D thisMath;
+	vector<double> R = thisMath.subtract(fieldPoint, currentPoint);
+	double R_abs = thisMath.Abs(R);
+	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
+	double k;
+	if (R_abs == 0.0)
+	{
+		k = 0;
+	}
+	else
+	{
+
+		k = current / (2.0*PI*pow(R_abs, 2.0));
 	}
 
 	vector<double> dH_P = thisMath.multiScal(vector_product, k);
@@ -110,7 +132,7 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 				{
 					//Point to get H
 					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
-					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, currentDensityVec, 1);
+					vector<double> dHPoint = biotSavartEquationThreeD(P_coord, pFieldxy, currentDensityVec, 1);
 					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
 					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
 					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
@@ -186,6 +208,7 @@ void BiotSavart::integrateTwoD(vector<vector<double>> &Hresults, int volID, doub
 
 				// Get dH using the Biot-Savart equation
 				jac = oper.Jacobian(thisElemType, i, mesh, pFielduv);
+				jac.resize(2, 2);
 				double detJac = abs(jac.Det_3x3());
 				double weight = thisElemGauss.weights[pointCounter];
 
@@ -193,10 +216,10 @@ void BiotSavart::integrateTwoD(vector<vector<double>> &Hresults, int volID, doub
 				{
 					//Point to get H
 					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
-					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, currentDensityVec, 1);
+					vector<double> dHPoint = biotSavartEquationTwoD(P_coord, pFieldxy, currentDensityVec, 1);
 					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
 					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
-					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
+
 				}
 
 			}
@@ -274,7 +297,7 @@ vector<vector<double>>  BiotSavart::integrateLine(double current,int volID,GetMe
 				{
 					//Point to get H
 					vector <double> P_coord = { gaussPointsData[pointCounter][0], gaussPointsData[pointCounter][1], gaussPointsData[pointCounter][2] };
-					vector<double> dHPoint = biotSavartEquation(P_coord, pFieldxy, dlUnitary, current);
+					vector<double> dHPoint = biotSavartEquationThreeD(P_coord, pFieldxy, dlUnitary, current);
 					Hresults[pointCounter][0] += dHPoint[0] * weight*detJac;
 					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
 					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;

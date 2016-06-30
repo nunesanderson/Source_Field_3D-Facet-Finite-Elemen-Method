@@ -117,6 +117,7 @@ private:
 	void lineTwoPoints();
 	void lineOnePoint();
 
+	void triangleOnePointsInside();
 	void triangleThreePointsInside();
 	void triangleFourPointsInside();
 	void triangleSevenPointsInside();
@@ -132,6 +133,8 @@ private:
 
 class Operations {
 public:
+
+	int getElemDimension(int ElemType);
 	void getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, int volIDField);
 
 	/**

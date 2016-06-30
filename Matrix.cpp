@@ -119,6 +119,7 @@ double Matrix::Det_3x3()
 	return determinant;
 }
 
+
 vector<double> Vector1D::subtract(vector<double> arrA, vector<double> arrB)
 {
 	int sizeA = arrA.size();
@@ -145,6 +146,23 @@ double Vector1D::Abs(vector<double> arr)
 
 	}
 	ans = sqrt(ans);
+	return ans;
+}
+
+vector <vector <double>> Vector1D::sum(vector <vector <double>> arrA, vector <vector <double>> arrB)
+{
+	int rows = arrA.size();
+	int cols = arrA[0].size();
+	vector<vector<double>> ans(rows, vector<double>(cols, 0));
+
+	for (int row = 0; row < rows; row++)
+	{
+		for (int col = 0; col < cols; col++)
+		{
+			ans[row][col] = arrA[row][col] + arrB[row][col];
+		}
+	}
+
 	return ans;
 }
 

@@ -1,15 +1,4 @@
-﻿  ShapeFunctions.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\shapefunctions.cpp(592): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-  Compiling...
-  Biot-Savart.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(65): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(62): warning C4101: 'thisMath': unreferenced local variable
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(150): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(147): warning C4101: 'thisMath': unreferenced local variable
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(231): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-  Skipping... (no relevant changes detected)
-  Tests-Biot-Savart.cpp
-  EMFET_SF.cpp
+﻿  Tests-Biot-Savart.cpp
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(247): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(257): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Debug\EMFET_SF.exe

@@ -236,16 +236,81 @@ void TestsBiotSavart::TwoD()
 	points.getGaussPoints(pointsCoordinatesX, pointsIDX, mesh_first, 1001);
 	points.getGaussPoints(pointsCoordinatesY, pointsIDY, mesh_first, 1000);
 
-	vector<vector<double>>teste = { {0,0,0} };
-	////////////////////////////////////////////////////////////////
-	// Biot Savart inetgration
+////////////////////////////////////////////////////////////////
+// Biot Savart inetgration
 	BiotSavart biotSavart;
-	int volID = 1003;
-	double current_Density = 6250000;
-	int numberGaussPoints = teste.size();
-	vector<vector<double>> Hresults(numberGaussPoints, vector<double>(3, 0));
+	int volID1 = 1003;
+	int volID2 = 1004;
+	double current_Density = 13333.33333;
 
-	biotSavart.integrateTwoD(Hresults, volID, current_Density, mesh_second, teste, path);
+	// Line along Y 
+	int numberGaussPointsY = pointsCoordinatesY.size();
+	vector<vector<double>> HresultsYFirst(numberGaussPointsY, vector<double>(3, 0));
+	biotSavart.integrateTwoD(HresultsYFirst, volID1, -current_Density, mesh_first, pointsCoordinatesY, path);
+	biotSavart.integrateTwoD(HresultsYFirst, volID2, current_Density, mesh_first, pointsCoordinatesY, path);
+
+	vector<vector<double>> HresultsYSecond(numberGaussPointsY, vector<double>(3, 0));
+	biotSavart.integrateTwoD(HresultsYSecond, volID1, -current_Density, mesh_second, pointsCoordinatesY, path);
+	biotSavart.integrateTwoD(HresultsYSecond, volID2, current_Density, mesh_second, pointsCoordinatesY, path);
+
+	// Line along X 
+	int numberGaussPointsX = pointsCoordinatesX.size();
+	vector<vector<double>> HresultsXFirst(numberGaussPointsX, vector<double>(3, 0));
+	biotSavart.integrateTwoD(HresultsXFirst, volID1, -current_Density, mesh_first, pointsCoordinatesX, path);
+	biotSavart.integrateTwoD(HresultsXFirst, volID2, current_Density, mesh_first, pointsCoordinatesX, path);
+
+	vector<vector<double>> HresultsXSecond(numberGaussPointsX, vector<double>(3, 0));
+	biotSavart.integrateTwoD(HresultsXSecond, volID1, -current_Density, mesh_second, pointsCoordinatesX, path);
+	biotSavart.integrateTwoD(HresultsXSecond, volID2, current_Density, mesh_second, pointsCoordinatesX, path);
+
+
+////////////////////////////////////////////////////////////////
+// Post processing
+
+	vector<vector<double>> BiotSavartXFirst;
+	vector<vector<double>> BiotSavartXSecond;
+	vector<vector<double>> BiotSavartYFirst;
+	vector<vector<double>> BiotSavartYSecond;
+
+
+	int counter = 0;
+	for each (vector<double> thisData in pointsCoordinatesY)
+	{
+		vector<double> lineYFirst;
+		lineYFirst.push_back(pointsCoordinatesY[counter][1]);
+		lineYFirst.push_back(abs(HresultsYFirst[counter][1]));
+		BiotSavartYFirst.push_back(lineYFirst);
+
+		vector<double> lineYSecond;
+		lineYSecond.push_back(pointsCoordinatesY[counter][1]);
+		lineYSecond.push_back(abs(HresultsYSecond[counter][1]));
+		BiotSavartYSecond.push_back(lineYFirst);
+		
+		counter++;
+	}
+
+
+	counter = 0;
+	for each (vector<double> thisData in pointsCoordinatesX)
+	{
+		vector<double> lineXFirst;
+		lineXFirst.push_back(pointsCoordinatesX[counter][0]);
+		lineXFirst.push_back(HresultsXFirst[counter][1]);
+		BiotSavartXFirst.push_back(lineXFirst);
+
+		vector<double> lineXSecond;
+		lineXSecond.push_back(pointsCoordinatesX[counter][0]);
+		lineXSecond.push_back(HresultsXSecond[counter][1]);
+		BiotSavartXSecond.push_back(lineXSecond);
+
+		counter++;
+	}
+	PostProcessing post;
+	post.writeDataResults(BiotSavartXFirst, path, "BiotSavartXFirst");
+	post.writeDataResults(BiotSavartXSecond, path, "BiotSavartXSecond");
+	post.writeDataResults(BiotSavartYFirst, path, "BiotSavartYFirst");
+	post.writeDataResults(BiotSavartYSecond, path, "BiotSavartYSecond");
+
 
 }
 

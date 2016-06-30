@@ -20,6 +20,8 @@ public:
 	void resize(int rows,int cols);
 	void ones();
 	double Det_3x3();
+	double Det_2x2();
+
 
 private:
 
@@ -31,6 +33,7 @@ public:
 	vector <double> subtract(vector <double> arrA, vector <double> arrB);
 	double Abs(vector <double> arr);
 	vector <double> sum(vector <double> arrA, vector <double> arrB);
+	vector <vector <double>> sum(vector <vector <double>> arrA, vector <vector <double>> arrB);
 	vector<double> multiScal(vector<double>arr, double scal);
 	vector<double> crossProduct(vector <double> u, vector <double> v);
 	double distance(vector <double> u, vector <double> v);

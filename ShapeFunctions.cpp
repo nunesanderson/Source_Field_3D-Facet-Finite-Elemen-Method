@@ -235,8 +235,8 @@ Matrix ShapeFunctions::gradNodalTriangleFirstOrder()
 	Ida&Bastos, pg 315, table 8.4*/
 
 	Matrix ans(3, 3);
-	ans.mat[0][0] = -1.0;	ans.mat[0][1] = 1.0;	ans.mat[0][2] = 0.0;	
-	ans.mat[1][0] = -1.0;	ans.mat[1][1] = 0.0;	ans.mat[1][2] = 1.0;	
+	ans.mat[0][0] = -1.0;	ans.mat[0][1] = 1.0;	ans.mat[0][2] = 0.0;//gradNu
+	ans.mat[1][0] = -1.0;	ans.mat[1][1] = 0.0;	ans.mat[1][2] = 1.0;//gradNv	
 
 	return ans;
 }
@@ -368,7 +368,7 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 		break;
 
 	case 2: //First order triangle
-		triangleThreePointsInside();
+		triangleOnePointsInside();
 		break;
 
 	case 4: //First order tetrahedral
@@ -384,7 +384,7 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 		break;
 
 	case 9://Second order triangle
-		triangleSevenPointsInside();
+		triangleThreePointsInside();
 		break;
 
 	case 11: //First order tetrahedral
@@ -414,6 +414,15 @@ void GaussLegendrePoints::lineOnePoint() {
 	pointsCoordinates.mat[0][0] = 0.0;	pointsCoordinates.mat[0][1] = 0.0;	pointsCoordinates.mat[0][2] = 0.0;
 	
 	weights.push_back(2.0);
+}
+
+
+void GaussLegendrePoints::triangleOnePointsInside()
+{
+	pointsCoordinates.resize(1, 3);
+	pointsCoordinates.mat[0][0] = 1.0/3.0;		pointsCoordinates.mat[0][1] = 1.0 / 3.0;		pointsCoordinates.mat[0][2] = 0;
+
+	weights.push_back(1.0 / 2.0);
 }
 
 void GaussLegendrePoints::triangleThreePointsInside()
@@ -552,6 +561,34 @@ void GaussLegendrePoints::hexahedralEightPoinstInside() {
 /* ------------------------------------------------------------------------
 Shape functions operations
 ---------------------------------------------------------------------------*/
+
+int Operations::getElemDimension(int ElemType)
+{
+	int ans = 0;
+	vector<int> ZeroD = {15};
+	vector<int> OneD = {1,8};
+	vector<int> TwoD = {2,3,9,10,16 };
+	vector<int> ThreeD = {4,5,6,7,11,12,17,19};
+
+	if (std::find(ZeroD.begin(), ZeroD.end(), ElemType) != ZeroD.end())
+	{
+		ans = 0;
+	}
+	else if (std::find(OneD.begin(), OneD.end(), ElemType) != OneD.end())
+	{
+		ans = 1;
+	}
+	else if (std::find(TwoD.begin(), TwoD.end(), ElemType) != TwoD.end())
+	{
+		ans = 2;
+	}
+	else if (std::find(ThreeD.begin(), ThreeD.end(), ElemType) != ThreeD.end())
+	{
+		ans = 3;
+	}
+
+	return ans;
+}
 
 void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, int volIDField)
 {
