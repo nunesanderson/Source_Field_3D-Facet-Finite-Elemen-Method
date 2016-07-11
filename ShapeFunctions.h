@@ -135,7 +135,7 @@ class Operations {
 public:
 
 	int getElemDimension(int ElemType);
-	void getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, int volIDField);
+	void getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
 
 	/**
 	Coordinates of the points of one element

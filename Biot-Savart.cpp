@@ -27,7 +27,8 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	double R_abs = thisMath.Abs(R);
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
-	if (R_abs == 0.0)
+	
+	if (R_abs==0.0)
 	{
 		k = 0;
 	}
@@ -49,14 +50,15 @@ vector<double> BiotSavart::biotSavartEquationTwoD(vector <double> fieldPoint, ve
 	double R_abs = thisMath.Abs(R);
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
-	if (R_abs == 0.0)
+	double lim = 1*pow(10, -4);
+	if (R_abs < lim)
 	{
 		k = 0;
 	}
 	else
 	{
 
-		k = current / (2.0*PI*pow(R_abs, 2.0));
+		k = current / (4.0*PI*pow(R_abs, 2.0));
 	}
 
 	vector<double> dH_P = thisMath.multiScal(vector_product, k);

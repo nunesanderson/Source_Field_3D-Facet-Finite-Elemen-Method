@@ -388,7 +388,7 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 		break;
 
 	case 11: //First order tetrahedral
-		tetrahedralFivePoinst();
+		tetrahedralFourPoinst();
 		break;
 
 	default:
@@ -590,7 +590,7 @@ int Operations::getElemDimension(int ElemType)
 	return ans;
 }
 
-void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, int volIDField)
+void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField)
 {
 	Messages messages;
 	messages.logMessage("Calculating Gauss points");
@@ -603,7 +603,8 @@ void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector
 	int pointCounter = 0;
 	for (int i = 0; i < mesh.numElements; i++)
 	{
-		if (mesh.physicalTags[i] == volIDField)
+		
+		if (std::find(volIDField.begin(), volIDField.end(), mesh.physicalTags[i]) != volIDField.end())
 		{
 
 			// Only gets the Gauss points when 
