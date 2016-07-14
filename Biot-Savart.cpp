@@ -58,7 +58,7 @@ vector<double> BiotSavart::biotSavartEquationTwoD(vector <double> fieldPoint, ve
 	else
 	{
 
-		k = current / (4.0*PI*pow(R_abs, 2.0));
+		k = current / (2.0*PI*pow(R_abs, 2.0));
 	}
 
 	vector<double> dH_P = thisMath.multiScal(vector_product, k);
@@ -118,8 +118,8 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
 
 				//current density vector
-				double theta = atan2(pFieldxy[1], pFieldxy[0]);
-				vector<double> currentDensityVec = { current_Density*sin(theta) ,-current_Density*cos(theta),0 };
+				double theta = atan2(pFieldxy[2]-centerPosition[2], pFieldxy[0]-centerPosition[0]);
+				vector<double> currentDensityVec = { current_Density*sin(theta) ,0,-current_Density*cos(theta) };
 
 				//save the current density plot
 				currentDensity.push_back(currentDensityVec);

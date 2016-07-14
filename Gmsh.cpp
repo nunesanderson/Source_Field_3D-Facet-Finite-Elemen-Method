@@ -304,7 +304,7 @@ void PostProcessing::writeGaussPointsIDs(vector<vector<int>> pointsIDPerElement,
 			myfile << thisID;
 			if (counter < thisElemPoints.size() - 1)
 			{
-				myfile << ",";
+				myfile << " ";
 			}
 			counter++;
 		}
@@ -320,7 +320,7 @@ void PostProcessing::writeGaussPointsIDs(vector<vector<int>> pointsIDPerElement,
 	{
 		for each (int i in thisElemPoints)
 		{
-			myfile << pointsCoordinates[i][0] << "," << pointsCoordinates[i][1] << "," << pointsCoordinates[i][2] << "\n";
+			myfile << pointsCoordinates[i][0] << " " << pointsCoordinates[i][1] << " " << pointsCoordinates[i][2] << "\n";
 		}
 	}
 	myfile.close();

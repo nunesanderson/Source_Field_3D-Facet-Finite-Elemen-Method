@@ -360,52 +360,34 @@ void TestsBiotSavart::Rele3D()
 	vector<vector<double>>pointsCoordinates;
 	vector<vector<int>>pointsID;
 	Operations points;
-	vector<int>volIDy = {2000,2001,2002,2003,2004,2005};
-	points.getGaussPoints(pointsCoordinates, pointsID, mesh, volIDy);
+	vector<int>volID = {2000,2001,2002,2003,2004,2005};
+	//vector<int>volID = { 2001};
+
+	points.getGaussPoints(pointsCoordinates, pointsID, mesh, volID);
+
 
 
 	////////////////////////////////////////////////////////////////
 	// Biot Savart inetgration
 	BiotSavart biotSavart;
 	double current_Density = 41666666.67;
-	vector<double>centerPosition = { 0.1,0.0,0.0 };
-	int volIDCurrente = 1000;
+	vector<double>centerPosition = { 0.01,0.00,0.01 };
+	int volIDCurrente = 2005;
 	int alongAxis = 0;
-	/*vector<vector<double>> field_first = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh_first, pointsCoordinates, path);
-	vector<vector<double>> field_second = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh_second, pointsCoordinates, path);
-*/
-	//vector<vector<double>> BiotSavart_first;
-	//vector<vector<double>> BiotSavart_second;
-
-
-	//counter = 0;
-	//for each (vector<double> thisData in field_first)
-	//{
-	//	vector<double> line_first;
-	//	line_first.push_back(pointsCoordinates[counter][0]);
-	//	double mag = sqrt(pow(field_first[counter][0], 2) + pow(field_first[counter][2], 2));
-	//	line_first.push_back(mag);
-
-	//	vector<double> line_second;
-	//	line_second.push_back(pointsCoordinates[counter][0]);
-	//	mag = sqrt(pow(field_second[counter][0], 2) + pow(field_second[counter][2], 2));
-	//	line_second.push_back(mag);
-
-	//	BiotSavart_first.push_back(line_first);
-	//	BiotSavart_second.push_back(line_second);
-
-	//	counter++;
-	//}
+	vector<vector<double>> field = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
 
 	//////////////////////////////////////////////////////////////////
 	//// Post processing
-	//PostProcessing post;
-	//post.writeVectorField(pointsCoordinates, field_first, "H", path + "\\results\\Gmsh_H_vector_first.txt");
-	//post.writeVectorField(pointsCoordinates, field_second, "H", path + "\\results\\Gmsh_H_vector_second.txt");
+	PostProcessing post;
 
-	//post.writeDataResults(plotAnaly, path, "analyt");
-	//post.writeDataResults(BiotSavart_first, path, "Biot_first");
-	//post.writeDataResults(BiotSavart_second, path, "Biot_sec");
+	//writes the field solution to Gmsh
+	post.writeVectorField(pointsCoordinates, field, "H", path + "\\results\\Gmsh_H_vector_first.txt");
+	
+	//Writes the Gauss points information
+	post.writeGaussPointsIDs(pointsID, pointsCoordinates, path);
+
+	//Writes the magnetic field
+	post.writeDataResults(field, path, "Hfield_Gauss_Points.txt");
 
 
 
