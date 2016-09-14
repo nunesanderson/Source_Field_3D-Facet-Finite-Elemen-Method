@@ -28,14 +28,17 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
 	
-	if (R_abs==0.0)
+	double lim = 1 * pow(10, -3);
+	if (R_abs < lim)
 	{
 		k = 0;
 	}
 	else
 	{
 
-		k = current / (4.0*PI*pow(R_abs, 3.0));
+		//k = current / (4.0*PI*pow(R_abs, 3.0));
+		k = current / (2.0*PI*pow(R_abs, 2.0));
+
 	}
 
 	vector<double> dH_P = thisMath.multiScal(vector_product, k);
@@ -50,7 +53,7 @@ vector<double> BiotSavart::biotSavartEquationTwoD(vector <double> fieldPoint, ve
 	double R_abs = thisMath.Abs(R);
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
-	double lim = 1*pow(10, -4);
+	double lim = 100*pow(10, -4);
 	if (R_abs < lim)
 	{
 		k = 0;
@@ -103,13 +106,11 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 
 		if ((std::find(validElemTypes.begin(), validElemTypes.end(), thisElemType) != validElemTypes.end()) && (physicalTag[i] == volID))
 		{
-
 			// loop for the Gauss points
 			GaussLegendrePoints thisElemGauss(thisElemType);
 			vector<double> dHElement = { 0, 0, 0 };
 			for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
 			{
-
 				//Integration point @UVP
 				vector<double>pFielduv;
 				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
@@ -119,7 +120,8 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 
 				//current density vector
 				double theta = atan2(pFieldxy[2]-centerPosition[2], pFieldxy[0]-centerPosition[0]);
-				vector<double> currentDensityVec = { current_Density*sin(theta) ,0,-current_Density*cos(theta) };
+				//vector<double> currentDensityVec = { current_Density*sin(theta) ,0,-current_Density*cos(theta) };
+				vector<double> currentDensityVec = { 0 ,0,current_Density};
 
 				//save the current density plot
 				currentDensity.push_back(currentDensityVec);
@@ -139,9 +141,7 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 					Hresults[pointCounter][1] += dHPoint[1] * weight*detJac;
 					Hresults[pointCounter][2] += dHPoint[2] * weight*detJac;
 				}
-
 			}
-
 		}
 	}
 	messages.logMessage("BiotSavart - Solid domain integration: Done");

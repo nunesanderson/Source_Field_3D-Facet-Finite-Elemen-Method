@@ -1,5 +1,8 @@
 #include <string>
 #include<vector>
+#include <iostream>
+#include <fstream>
+
 using namespace std;
 using std::string;
 
@@ -16,7 +19,10 @@ class GetMesh
 public:
 	GetMesh(string filePath);
 	void writeMesh(GetMesh mesh, string filePath, vector<int> IDs);
-	vector<int> defineBoundary(GetMesh meshData, int phySurfaceFilter, int phyVolumeFilter, int atLeastNumNodes);
+	vector<int> defineBoundary(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors);
+	vector<vector<double>>defineNormaVectors(GetMesh meshData, int phySurfaceFilter, vector<int> boundaryElementsList);
+
+	
 	~GetMesh();
 	vector<int> physicalTags;
 	vector<vector<double>> nodesCoordinates;
@@ -40,8 +46,9 @@ private:
 class PostProcessing {
 public:
 	void writeVectorField(vector<vector<double>> coordinates, vector<vector<double>> fields, string fieldName, string path);
-	void writeGaussPointsIDs(vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path);
+	void writeGaussPointsIDs(vector<int>elemIDs,vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path);
 	void writeDataResults(vector<vector<double>> twoDArrayData, string path,string fileName);
+	vector<vector<double>> readDataFile(string path, string fileName);
 
 };
 #endif

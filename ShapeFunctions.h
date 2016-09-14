@@ -135,7 +135,9 @@ class Operations {
 public:
 
 	int getElemDimension(int ElemType);
+	void getGaussPoints(vector<int> &elem_ID_list, vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
 	void getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
+	void getGaussPointsVol(vector<int> &elem_ID_list,vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
 
 	/**
 	Coordinates of the points of one element
@@ -163,6 +165,10 @@ public:
 	vector<double> scalLocalToReal(int elemType, int elemID, GetMesh mesh, vector<double> point);
 	Matrix Jacobian(int elemType, int elemID, GetMesh mesh, vector<double> point);
 	double getDetJac1D(Matrix mat);
+
+private:
+	void getGaussPoints_private(vector<int> &elem_ID_list,vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
+
 
 };
 

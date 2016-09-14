@@ -387,7 +387,7 @@ GaussLegendrePoints::GaussLegendrePoints(int ElemType) {
 		triangleThreePointsInside();
 		break;
 
-	case 11: //First order tetrahedral
+	case 11: //Second order tetrahedral
 		tetrahedralFourPoinst();
 		break;
 
@@ -590,7 +590,22 @@ int Operations::getElemDimension(int ElemType)
 	return ans;
 }
 
+void Operations::getGaussPoints(vector<int> &elem_ID_list, vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField)
+{
+	Operations oper;
+	oper.getGaussPoints_private(elem_ID_list, gaussPointsCoord, pointsIDPerElement, mesh, volIDField);
+
+}
+
 void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField)
+{
+	Operations oper;
+	vector<int> elem_ID_list;
+	oper.getGaussPoints_private(elem_ID_list, gaussPointsCoord, pointsIDPerElement, mesh, volIDField);
+
+}
+
+void Operations::getGaussPointsVol(vector<int> &elem_ID_list,vector<vector<double>>& gaussPointsCoord, vector<vector<int>>& pointsIDPerElement, GetMesh mesh, vector<int> volIDField)
 {
 	Messages messages;
 	messages.logMessage("Calculating Gauss points");
@@ -598,42 +613,33 @@ void Operations::getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector
 	ShapeFunctions shape;
 	vector< vector<double>> thisGauss;
 
-	// Loop for all the elements
-	int thisElemType = 150;
-	int pointCounter = 0;
+	int counter = 0;
 	for (int i = 0; i < mesh.numElements; i++)
 	{
-		
+
 		if (std::find(volIDField.begin(), volIDField.end(), mesh.physicalTags[i]) != volIDField.end())
 		{
-
-			// Only gets the Gauss points when 
-			if (thisElemType != mesh.elemTypes[i])
-			{
-				thisElemType = mesh.elemTypes[i];
-				GaussLegendrePoints thisElemGauss(thisElemType);
-				thisGauss = thisElemGauss.pointsCoordinates.mat;
-
-			}
-
-			// Loop for all the Gauss points
+			elem_ID_list.push_back(i);
+			int thisElemType = mesh.elemTypes[i];
+			GaussLegendrePoints thisElemGauss(thisElemType);
 			vector<int> thisPointsID;
-			for (int eachPoint = 0; eachPoint < thisGauss.size(); eachPoint++)
+			for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
 			{
+				//UVP
+				vector<double>pFielduv;
+				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
 
-				vector<double> ptUV;
-				ptUV = thisGauss[eachPoint];
+				//XYZ
+				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
 
-				vector<double> ptXY = oper.scalLocalToReal(thisElemType, i, mesh, ptUV);
-				gaussPointsCoord.push_back(ptXY);
-				thisPointsID.push_back(pointCounter);
-				pointCounter++;
+				gaussPointsCoord.push_back(pFieldxy);
+				thisPointsID.push_back(counter);
+				counter++;
 			}
 			pointsIDPerElement.push_back(thisPointsID);
+
 		}
 	}
-	messages.logMessage("Calculating Gauss points: Done");
-
 }
 
 
@@ -718,6 +724,101 @@ double Operations::getDetJac1D(Matrix mat)
 {
 	double ans = sqrt(pow(mat.mat[0][0], 2) + pow(mat.mat[0][1], 2) + pow(mat.mat[0][2], 2));
 	return ans;
+}
+
+void Operations::getGaussPoints_private(vector<int> &elem_ID_list, vector<vector<double>>& gaussPointsCoord, vector<vector<int>>& pointsIDPerElement, GetMesh mesh, vector<int> volIDField)
+{
+
+	Messages messages;
+	messages.logMessage("Calculating Gauss points");
+	Operations oper;
+	ShapeFunctions shape;
+	vector< vector<double>> thisGauss;
+
+	int counter = 0;
+	for each (int elem in elem_ID_list)
+	{
+		int thisElemType = mesh.elemTypes[elem];
+		GaussLegendrePoints thisElemGauss(thisElemType);
+		vector<int> thisPointsID;
+		for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
+		{
+			//UVP
+			vector<double>pFielduv;
+			pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+
+			//XYZ
+			vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, elem, mesh, pFielduv);
+
+			gaussPointsCoord.push_back(pFieldxy);
+			thisPointsID.push_back(counter);
+		counter++;
+		}
+		pointsIDPerElement.push_back(thisPointsID);
+	}
+
+
+
+
+	//// Loop for all the elements
+	//int thisElemType = 150;
+	//int pointCounter = 0;
+	//bool addElement = false;
+	//if (elem_ID_list.size() > 0)
+	//{
+	//	addElement = true;
+	//}
+	//for (int i = 0; i < mesh.numElements; i++)
+	//{
+	//	bool run_this_element = false;
+
+	//	//Check if it is necessary to process this element
+	//	if (std::find(volIDField.begin(), volIDField.end(), mesh.physicalTags[i]) != volIDField.end())
+	//	{
+	//		run_this_element = true;
+
+	//		//Check if the list elem_ID_list contains this element
+	//		if (addElement)
+	//		{
+	//			if (std::find(elem_ID_list.begin(), elem_ID_list.end(), i) != elem_ID_list.end())
+	//				run_this_element = true;
+	//			else
+	//				run_this_element = false;
+	//		}
+	//	}
+
+	//	if (run_this_element)
+	//	{
+	//		elem_ID_list.push_back(i);
+	//		// Only gets the Gauss points when the element type changes
+	//		if (thisElemType != mesh.elemTypes[i])
+	//		{
+	//			thisElemType = mesh.elemTypes[i];
+	//			GaussLegendrePoints thisElemGauss(thisElemType);
+	//			thisGauss = thisElemGauss.pointsCoordinates.mat;
+
+	//		}
+
+	//		// Loop for all the Gauss points
+	//		vector<int> thisPointsID;
+	//		for (int eachPoint = 0; eachPoint < thisGauss.size(); eachPoint++)
+	//		{
+
+	//			vector<double> ptUV;
+	//			ptUV = thisGauss[eachPoint];
+
+	//			vector<double> ptXY = oper.scalLocalToReal(thisElemType, i, mesh, ptUV);
+	//			gaussPointsCoord.push_back(ptXY);
+	//			thisPointsID.push_back(pointCounter);
+	//			pointCounter++;
+	//		}
+	//		pointsIDPerElement.push_back(thisPointsID);
+	//	}
+
+	//}
+
+
+	messages.logMessage("Calculating Gauss points: Done");
 }
 
 vector<int> GmshNodesNumbering::GetGmshNodesNumbering(int ElemType)

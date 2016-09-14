@@ -7,13 +7,14 @@ using namespace std;
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 /* ------------------------------------------------------------------------
 Internal includes
 ---------------------------------------------------------------------------*/
 #include "Gmsh.h"
 #include "Messages.h"
-
+#include "ShapeFunctions.h"
 
 GetMesh::~GetMesh() {}
 
@@ -153,7 +154,7 @@ void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
 		int thisID = IDs[i];
 		myfile << i + 1 << " " << elemTypes[thisID] << " " << "2" << " " << physicalTags[thisID] << " " << elementaryTags[thisID] << " ";
 
-		for (size_t k = 0; k <  elemNodes[thisID].size(); k++)
+		for (size_t k = 0; k < elemNodes[thisID].size(); k++)
 		{
 			myfile << elemNodes[thisID][k] + 1;
 			if (k < elemNodes[thisID].size() - 1)
@@ -171,7 +172,7 @@ void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
 
 
 
-vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, int phyVolumeFilter, int atLeastNumNodes) {
+vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors) {
 
 	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
 	vector<vector<int>> elemNodes = mesh.elemNodes;
@@ -179,11 +180,15 @@ vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, int phyV
 	vector<int> physicalTasg = mesh.physicalTags;
 	vector<int> elementaryTags = mesh.elementaryTags;
 	vector<int> numNodesPerElem = mesh.numNodesPerElement;
-
 	int numNodes = mesh.numNodes;
 	int numElements = mesh.numElements;
-
+	Operations oper;
 	vector<int> elementsBothDomains;
+
+	vector < vector<int>>  twoDElementNodes;
+	vector<int> globalID;
+	vector<vector<double>> printNormalVectorPosition;
+
 
 	for (int i = 0; i < numElements; i++)
 	{
@@ -200,7 +205,8 @@ vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, int phyV
 
 			for (int elemCounter = 0; elemCounter < numElements; elemCounter++)
 			{
-				if (elemTypes[elemCounter]>= 4 && physicalTags[elemCounter] == phyVolumeFilter)
+
+				if (elemTypes[elemCounter] >= 4 && std::find(phyVolumeFilter.begin(), phyVolumeFilter.end(), physicalTags[elemCounter]) != phyVolumeFilter.end())
 				{
 					vector<int> this3DElemNodes;
 
@@ -229,18 +235,91 @@ vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, int phyV
 
 					if (addThisElem)
 					{
+						//Gets this element ID
 						elementsBothDomains.push_back(elemCounter);
+						twoDElementNodes.push_back(this2DElemNodes);
+						globalID.push_back(i);
 					}
 				}
 			}
 		}
-		else
-		{
-			break;
-		}
 	}
+
+	//Computes the normal vector
+	int counter = 0;
+	for each (int elemID in elementsBothDomains)
+	{
+		vector<int> this2DElemNodes = twoDElementNodes[counter];
+		int PointID = this2DElemNodes[0];
+		vector<double> P1 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+		PointID = this2DElemNodes[1];
+		vector<double> P2 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+		PointID = this2DElemNodes[2];
+		vector<double> P3 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+		Vector1D thisMath;
+		vector<double> A = thisMath.subtract(P2, P1);
+		vector<double> B = thisMath.subtract(P3, P1);
+		vector<double> AxB = thisMath.crossProduct(A, B);
+		double absAxB = thisMath.Abs(AxB);
+		vector<double> normal = thisMath.multiScal(AxB, 1.0 / absAxB);
+
+		int thisElemType = elemTypes[elemID];
+		GaussLegendrePoints thisElemGauss(thisElemType);
+		for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
+		{
+			//UVP
+			vector<double>pFielduv;
+			pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+
+			//XYZ
+			vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, elemID, mesh, pFielduv);
+
+			normalVectors.push_back(normal);
+			printNormalVectorPosition.push_back(pFieldxy);
+		}
+
+		counter++;
+	}
+
+	PostProcessing post;
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\31_Subdomain_Dular_2009\\Subdomain");
+	post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", path + "\\results\\Gmsh_Normal_Vector.txt");
+
 	return elementsBothDomains;
 }
+
+//vector<vector<double>> GetMesh::defineNormaVectors(GetMesh mesh, int phySurfaceFilter,vector<int> boundaryElementsList)
+//{
+//	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
+//	vector<vector<int>> elemNodes = mesh.elemNodes;
+//	vector<int> elemTypes = mesh.elemTypes;
+//	vector<int> physicalTasg = mesh.physicalTags;
+//	vector<int> elementaryTags = mesh.elementaryTags;
+//	vector<int> numNodesPerElem = mesh.numNodesPerElement;
+//	int numNodes = mesh.numNodes;
+//	int numElements = mesh.numElements;
+//
+//	vector<int> elementsBothDomains;
+//
+//	for (int i = 0; i < numElements; i++)
+//	{
+//
+//		if (elemTypes[i] < 3 && physicalTags[i] == phySurfaceFilter)
+//		{
+//
+//			Get the nodes of this 2D element 
+//			vector<int> this2DElemNodes;
+//			for (size_t k = 0; k < elemNodes[i].size(); k++)
+//			{
+//				this2DElemNodes.push_back(elemNodes[i][k]);
+//
+//			}
+//
+//	return vector<vector<double>>();
+//}
 
 GetTxtData::~GetTxtData(void) {}
 GetTxtData::GetTxtData(string filePath) {
@@ -263,7 +342,7 @@ GetTxtData::GetTxtData(string filePath) {
 void PostProcessing::writeVectorField(vector<vector<double>> coordinates, vector<vector<double>> fields, string fieldName, string path) {
 
 	Messages messages;
-	messages.logMessage("Writing Gmsh vector field "+ fieldName);
+	messages.logMessage("Writing Gmsh vector field " + fieldName);
 
 	ofstream myfile;
 	myfile.open(path);
@@ -276,39 +355,48 @@ void PostProcessing::writeVectorField(vector<vector<double>> coordinates, vector
 
 	myfile << "TIME{ 1 };\n};";
 	myfile.close();
-	messages.logMessage("Writing Gmsh vector field " + fieldName+":Done");
+	messages.logMessage("Writing Gmsh vector field " + fieldName + ":Done");
 
 
 }
 
 
 
-void PostProcessing::writeGaussPointsIDs(vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path)
+void PostProcessing::writeGaussPointsIDs(vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path)
 {
 	Messages messages;
 	messages.logMessage("Writing Gauss points");
 
-	string fileNameID("results//IDs_Gauss_Points.txt");
-	string fileNameCoord("results//Coordinates_Gauss_Points.txt");
+	string fileNameID("results//Gauss_Points_IDs.txt");
+	string fileNameCoord("results//Gauss_Points_Coordinates.txt");
 	ofstream myfile;
+	string sep = " ";
 
 	/* ------------------------------------------------------------------------
 	Writes the IDS
 	---------------------------------------------------------------------------*/
 	myfile.open(path + fileNameID);
+	int elemCounter = 0;
+	size_t sizeElemIDs = elemIDs.size();
 	for each (vector<int> thisElemPoints in pointsIDPerElement)
 	{
+		if (sizeElemIDs > 0)
+			myfile << elemIDs[elemCounter] << sep;
+		else
+			myfile << elemCounter << sep;
+
 		size_t counter = 0;
 		for each (int thisID in thisElemPoints)
 		{
 			myfile << thisID;
 			if (counter < thisElemPoints.size() - 1)
 			{
-				myfile << " ";
+				myfile << sep;
 			}
 			counter++;
 		}
 		myfile << "\n";
+		elemCounter++;
 	}
 	myfile.close();
 
@@ -331,9 +419,9 @@ void PostProcessing::writeGaussPointsIDs(vector<vector<int>> pointsIDPerElement,
 void PostProcessing::writeDataResults(vector<vector<double>> twoDArrayData, string path, string fileName)
 {
 	Messages messages;
-	messages.logMessage("Writing data file "+fileName);
+	messages.logMessage("Writing data file " + fileName);
 
-	string filePath(path+"results//"+fileName+".txt");
+	string filePath(path + "results//" + fileName + ".txt");
 	ofstream myfile;
 	myfile.open(filePath);
 	for each (vector<double> thisRow in twoDArrayData)
@@ -352,6 +440,41 @@ void PostProcessing::writeDataResults(vector<vector<double>> twoDArrayData, stri
 	}
 	myfile.close();
 
-	messages.logMessage("Writing data file " + fileName+": Done");
+	messages.logMessage("Writing data file " + fileName + ": Done");
 
+}
+
+vector<vector<double>> PostProcessing::readDataFile(string path, string fileName)
+{
+
+	Messages messages;
+	messages.logMessage("Reading data file");
+
+	string filePath(path + "results//" + fileName + ".txt");
+	GetTxtData datafile(filePath);
+	vector<string> data = datafile.lines;
+	int rows = datafile.numLines;
+	vector<vector <double>> allLinesList;
+
+
+	for each (string str in data)
+	{
+		istringstream iss(str);
+		vector<double> thisLine;
+		int counter = 0;
+		do
+		{
+			string sub;
+			iss >> sub;
+			if (sub != "")
+			{
+				thisLine.push_back(stod(sub));
+
+			}
+		} while (iss);
+		allLinesList.push_back(thisLine);
+	}
+
+
+	return allLinesList;
 }

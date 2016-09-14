@@ -1,14 +1,12 @@
 ﻿  Tests-Biot-Savart.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(252): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(262): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(277): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(287): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(432): warning C4129: 'G': unrecognized character escape sequence
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(441): warning C4129: 'G': unrecognized character escape sequence
+  Gmsh.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
   ShapeFunctions.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\shapefunctions.cpp(644): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   EMFET_SF.cpp
   Biot-Savart.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(88): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(85): warning C4101: 'thisMath': unreferenced local variable
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(173): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(170): warning C4101: 'thisMath': unreferenced local variable
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\biot-savart.cpp(255): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Debug\EMFET_SF.exe

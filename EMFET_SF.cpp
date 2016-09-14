@@ -25,7 +25,7 @@ int main()
 	Messages messages;
 
 	TestsBiotSavart testBS;
-	testBS.Rele3D();
+	testBS.Subdomain ();
 
 	
 	//*******************************

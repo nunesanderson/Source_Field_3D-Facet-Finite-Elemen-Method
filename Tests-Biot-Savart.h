@@ -19,6 +19,11 @@ public:
 	void currentLoop();
 	void TwoD();
 	void Rele3D();
+	void Teste3D();
+	void Teste3D_core();
+	void Subdomain();
+
+
 
 
 
