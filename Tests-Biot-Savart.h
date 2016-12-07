@@ -18,19 +18,11 @@ public:
 	void volumeDomain();
 	void currentLoop();
 	void TwoD();
-	void Rele3D();
+	void Atuador3D();
 	void Teste3D();
 	void Teste3D_core();
 	void Subdomain();
-
-
-
-
-
-
-
-
-
+	void AdaptiveProcess(double fw);
 private:
 
 };

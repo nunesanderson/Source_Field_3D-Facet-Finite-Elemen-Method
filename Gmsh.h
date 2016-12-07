@@ -19,8 +19,8 @@ class GetMesh
 public:
 	GetMesh(string filePath);
 	void writeMesh(GetMesh mesh, string filePath, vector<int> IDs);
-	vector<int> defineBoundary(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors);
-	vector<vector<double>>defineNormaVectors(GetMesh meshData, int phySurfaceFilter, vector<int> boundaryElementsList);
+	vector<int> defineVolumeBoundary(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors, vector<double> &area);
+	vector<int> getGaussPointsSurface(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area);
 
 	
 	~GetMesh();
@@ -48,6 +48,7 @@ public:
 	void writeVectorField(vector<vector<double>> coordinates, vector<vector<double>> fields, string fieldName, string path);
 	void writeGaussPointsIDs(vector<int>elemIDs,vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path);
 	void writeDataResults(vector<vector<double>> twoDArrayData, string path,string fileName);
+	void getFieldComponents(vector<vector<double>> &normal, vector<vector<double>> &tangent, vector<double> area, vector<vector<double>> field, vector<vector<double>> pointsCoordinates, vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, string fileName, string path, GetMesh mesh);
 	vector<vector<double>> readDataFile(string path, string fileName);
 
 };

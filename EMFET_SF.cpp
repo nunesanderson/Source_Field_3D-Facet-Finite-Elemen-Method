@@ -18,6 +18,7 @@ Internal includes
 #include "Gmsh.h"
 #include "Messages.h"
 #include "Tests-Biot-Savart.h"
+#include <ctime>
 
 
 int main()
@@ -25,21 +26,10 @@ int main()
 	Messages messages;
 
 	TestsBiotSavart testBS;
-	testBS.Subdomain ();
-
-	
-	//*******************************
-	// Mesh layer
-	//*******************************
-	
-	//GetMesh mesh("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\24_Test boundary\\model.msh");
-	//int surf = 100;
-	//int vol = 80;
-	//vector<int> IDs = mesh.defineBoundary(mesh, surf, vol, 2);
-	//mesh.writeMesh(mesh, "C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\24_Test boundary\\model2.msh", IDs);
-	
+	double fw = 1.0;
+	double elapsed_secs = 0;
+	testBS.Atuador3D();
 	messages.logMessage("Finished!");
 	getchar();  
 	return 0;
 }
-

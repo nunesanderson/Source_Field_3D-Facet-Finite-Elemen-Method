@@ -138,7 +138,10 @@ public:
 	void getGaussPoints(vector<int> &elem_ID_list, vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
 	void getGaussPoints(vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
 	void getGaussPointsVol(vector<int> &elem_ID_list,vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
+	void getGaussPointsAdaptive(vector<int> &elem_ID_list, int &point_counter, vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> GaussPointID);
 
+	//(GetMesh mesh, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area
+	
 	/**
 	Coordinates of the points of one element
 
@@ -167,7 +170,7 @@ public:
 	double getDetJac1D(Matrix mat);
 
 private:
-	void getGaussPoints_private(vector<int> &elem_ID_list,vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh, vector<int> volIDField);
+	void getGaussPoints_private(vector<int> &elem_ID_list,vector<vector<double>> &gaussPointsCoord, vector<vector<int>> &pointsIDPerElement, GetMesh mesh);
 
 
 };

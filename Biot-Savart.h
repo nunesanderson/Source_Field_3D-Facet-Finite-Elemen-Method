@@ -24,3 +24,15 @@ public:
 	~BiotSavart();
 };
 #endif
+
+
+class CheckPair {
+	int i;
+public:
+	CheckPair(int j) : i(j) { }
+	bool operator()(std::pair<int, double> p)
+	{
+		return i == p.first;
+	}
+
+};

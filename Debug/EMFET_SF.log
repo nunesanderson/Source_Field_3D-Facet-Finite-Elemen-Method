@@ -1,4 +1,6 @@
-﻿  ShapeFunctions.cpp
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\shapefunctions.cpp(620): warning C4018: '<': signed/unsigned mismatch
-c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\shapefunctions.cpp(645): warning C4018: '<': signed/unsigned mismatch
+﻿  Tests-Biot-Savart.cpp
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(452): warning C4129: 'G': unrecognized character escape sequence
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(461): warning C4129: 'G': unrecognized character escape sequence
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(579): warning C4101: 'pointsVS': unreferenced local variable
+c:\anderson\pessoal\01_doutorado\3_codigos\emfet_sf\emfet_sf\tests-biot-savart.cpp(739): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\Debug\EMFET_SF.exe

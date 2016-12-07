@@ -1,11 +1,18 @@
 ﻿  Tests-Biot-Savart.cpp
-Tests-Biot-Savart.cpp(277): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(287): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(448): warning C4129: 'G': unrecognized character escape sequence
-Tests-Biot-Savart.cpp(457): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(282): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(292): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(492): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(501): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(620): warning C4101: 'pointsVS': unreferenced local variable
+Tests-Biot-Savart.cpp(699): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(720): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(752): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(769): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(782): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(783): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  27 of 1033 functions ( 2.6%) were compiled, the rest were copied from previous compilation.
+  40 of 1038 functions ( 3.9%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    23 functions had inline decision re-evaluated but remain unchanged
+    62 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Release\EMFET_SF.exe

@@ -20,6 +20,9 @@ Internal includes
 
 const double PI = 3.1415926535897;
 
+
+
+
 vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, vector <double> currentPoint, vector <double> dlUnitary, double current)
 {
 	Vector1D thisMath;
@@ -36,8 +39,8 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	else
 	{
 
-		//k = current / (4.0*PI*pow(R_abs, 3.0));
-		k = current / (2.0*PI*pow(R_abs, 2.0));
+		k = current / (4.0*PI*pow(R_abs, 3.0));
+		//k = current / (2.0*PI*pow(R_abs, 2.0));
 
 	}
 
@@ -118,20 +121,46 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 				//Integration point @XYZ
 				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
 
+				vector<int> plane;
+				if (alongAxis == 0)
+				{
+					plane.push_back(1);
+					plane.push_back(2);
+				}
+				else if (alongAxis == 1)
+				{
+					plane.push_back(0);
+					plane.push_back(2);
+				}
+				else if (alongAxis == 2)
+				{
+					plane.push_back(0);
+					plane.push_back(1);
+				}
+
+
+
 				//current density vector
-				double theta = atan2(pFieldxy[2]-centerPosition[2], pFieldxy[0]-centerPosition[0]);
-				//vector<double> currentDensityVec = { current_Density*sin(theta) ,0,-current_Density*cos(theta) };
-				vector<double> currentDensityVec = { 0 ,0,current_Density};
+				double theta = atan2(pFieldxy[plane[1]]-centerPosition[plane[1]], pFieldxy[plane[0]]-centerPosition[plane[0]]);
+				double component1 = current_Density*sin(theta);
+				double component2 = -current_Density*cos(theta);
+
+				vector<double> currentDensityVec(3);
+				currentDensityVec[plane[0]]= component1;
+				currentDensityVec[plane[1]] = component2;
+
+				//vector<double> currentDensityVec = { 0 ,0,current_Density};
 
 				//save the current density plot
 				currentDensity.push_back(currentDensityVec);
 				currentDensityListCoord.push_back(pFieldxy);
 
-				// Get dH using the Biot-Savart equation
+				//Volume information
 				jac = oper.Jacobian(thisElemType, i, mesh, pFielduv);
 				double detJac = abs(jac.Det_3x3());
 				double weight = thisElemGauss.weights[pointCounter];
 
+				// Get dH using the Biot-Savart equation
 				for (int pointCounter = 0; pointCounter < numberGaussPoints; pointCounter++)
 				{
 					//Point to get H
@@ -318,3 +347,4 @@ vector<vector<double>>  BiotSavart::integrateLine(double current,int volID,GetMe
 	messages.logMessage("BiotSavart - Line integration: Done");
 	return Hresults;
 }
+

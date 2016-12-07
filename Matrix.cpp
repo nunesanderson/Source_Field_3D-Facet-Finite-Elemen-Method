@@ -223,3 +223,15 @@ double Vector1D::distance(vector<double> P1, vector<double> P2)
 
 	return ans;
 }
+
+double Vector1D::dot(vector<double> u, vector<double> v)
+{
+	double ans = 0;
+	int n = u.size();
+	for (int i = 0; i < n; i++)
+	{
+		ans += u[i] * v[i];
+	}
+
+	return ans;
+}

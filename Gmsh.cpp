@@ -8,6 +8,7 @@ using namespace std;
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include<math.h>
 
 /* ------------------------------------------------------------------------
 Internal includes
@@ -56,6 +57,7 @@ GetMesh::GetMesh(string filePath)
 	for (int counter = 0; counter < numberLines; counter++)
 	{
 		vector <string> thisLine = allLinesList[counter];
+
 		//Nodes coordinates
 		if (thisLine[0] == "$Nodes")
 		{
@@ -73,6 +75,7 @@ GetMesh::GetMesh(string filePath)
 			checkMax = true;
 			startElements = counter;
 		}
+
 		size_t thisLineLen = thisLine.size();
 		if (thisLineLen > maxNumNodes && checkMax)
 			maxNumNodes = thisLineLen;
@@ -127,7 +130,6 @@ void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
 	vector<int> elemTypes = mesh.elemTypes;
 	vector<int> physicalTasg = mesh.physicalTags;
 	vector<int> elementaryTags = mesh.elementaryTags;
-	vector<int> numNodesPerElem = mesh.numNodesPerElement;
 	int numNodes = mesh.numNodes;
 	int numElements = mesh.numElements;
 
@@ -172,7 +174,77 @@ void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
 
 
 
-vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors) {
+vector<int> GetMesh::getGaussPointsSurface(GetMesh mesh, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area) {
+
+	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
+	vector<vector<int>> elemNodes = mesh.elemNodes;
+	vector<int> elemTypes = mesh.elemTypes;
+	vector<int> physicalTasg = mesh.physicalTags;
+	vector<int> elementaryTags = mesh.elementaryTags;
+	vector<int> numNodesPerElem = mesh.numNodesPerElement;
+	int numNodes = mesh.numNodes;
+	int numElements = mesh.numElements;
+	Operations oper;
+	vector<int> elementsBothDomains;
+
+	vector < vector<int>>  twoDElementNodes;
+	vector<int> globalID;
+	vector<vector<double>> printNormalVectorPosition;
+
+
+	for (int i = 0; i < numElements; i++)
+	{
+		//Chek if the element is 2D
+		if (elemTypes[i] < 3 && physicalTags[i] == phySurfaceFilter)
+		{
+
+			vector<int> this2DElemNodes = elemNodes[i];
+			int PointID = this2DElemNodes[0];
+			vector<double> P1 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+			PointID = this2DElemNodes[1];
+			vector<double> P2 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+			PointID = this2DElemNodes[2];
+			vector<double> P3 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+			Vector1D thisMath;
+			vector<double> A = thisMath.subtract(P2, P1);
+			vector<double> B = thisMath.subtract(P3, P1);
+			vector<double> AxB = thisMath.crossProduct(A, B);
+			double absAxB = thisMath.Abs(AxB);
+			vector<double> normal = thisMath.multiScal(AxB, 1.0 / absAxB);
+
+			//Area of the surface element
+			area.push_back(0.5*absAxB);
+
+			int thisElemType = elemTypes[i];
+			GaussLegendrePoints thisElemGauss(thisElemType);
+			for (int pointCounter = 0; pointCounter < thisElemGauss.pointsCoordinates.rows; pointCounter++)
+			{
+				//UVP
+				vector<double>pFielduv;
+				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+
+				//XYZ
+				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, i, mesh, pFielduv);
+
+				normalVectors.push_back(normal);
+				printNormalVectorPosition.push_back(pFieldxy);
+			}
+		}
+	}
+
+
+
+	PostProcessing post;
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\34_Atuador\\03_vert - Subproblems\\02_FFEM_complete");
+	post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", path + "\\results\\Gmsh_Normal_Vector.txt");
+
+	return elementsBothDomains;
+}
+
+vector<int> GetMesh::defineVolumeBoundary(GetMesh mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors,vector<double>  &area) {
 
 	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
 	vector<vector<int>> elemNodes = mesh.elemNodes;
@@ -265,6 +337,9 @@ vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, vector <
 		vector<double> AxB = thisMath.crossProduct(A, B);
 		double absAxB = thisMath.Abs(AxB);
 		vector<double> normal = thisMath.multiScal(AxB, 1.0 / absAxB);
+		
+		//Area of the surface element
+		area.push_back(0.5*absAxB);
 
 		int thisElemType = elemTypes[elemID];
 		GaussLegendrePoints thisElemGauss(thisElemType);
@@ -291,35 +366,6 @@ vector<int> GetMesh::defineBoundary(GetMesh mesh, int phySurfaceFilter, vector <
 	return elementsBothDomains;
 }
 
-//vector<vector<double>> GetMesh::defineNormaVectors(GetMesh mesh, int phySurfaceFilter,vector<int> boundaryElementsList)
-//{
-//	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
-//	vector<vector<int>> elemNodes = mesh.elemNodes;
-//	vector<int> elemTypes = mesh.elemTypes;
-//	vector<int> physicalTasg = mesh.physicalTags;
-//	vector<int> elementaryTags = mesh.elementaryTags;
-//	vector<int> numNodesPerElem = mesh.numNodesPerElement;
-//	int numNodes = mesh.numNodes;
-//	int numElements = mesh.numElements;
-//
-//	vector<int> elementsBothDomains;
-//
-//	for (int i = 0; i < numElements; i++)
-//	{
-//
-//		if (elemTypes[i] < 3 && physicalTags[i] == phySurfaceFilter)
-//		{
-//
-//			Get the nodes of this 2D element 
-//			vector<int> this2DElemNodes;
-//			for (size_t k = 0; k < elemNodes[i].size(); k++)
-//			{
-//				this2DElemNodes.push_back(elemNodes[i][k]);
-//
-//			}
-//
-//	return vector<vector<double>>();
-//}
 
 GetTxtData::~GetTxtData(void) {}
 GetTxtData::GetTxtData(string filePath) {
@@ -332,7 +378,6 @@ GetTxtData::GetTxtData(string filePath) {
 		{
 			lines.push_back(line);
 			numLines++;
-
 		}
 		myfile.close();
 	}
@@ -441,6 +486,102 @@ void PostProcessing::writeDataResults(vector<vector<double>> twoDArrayData, stri
 	myfile.close();
 
 	messages.logMessage("Writing data file " + fileName + ": Done");
+
+}
+
+void PostProcessing::getFieldComponents(vector<vector<double>> &normal, vector<vector<double>> &tangent, vector<double> area, vector<vector<double>> field, vector<vector<double>> pointsCoordinates, vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, string fileName, string path, GetMesh mesh)
+{
+	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
+	vector<vector<int>> elemNodes = mesh.elemNodes;
+	vector<int> elemTypes = mesh.elemTypes;
+	vector<int> physicalTasg = mesh.physicalTags;
+	vector<int> elementaryTags = mesh.elementaryTags;
+	vector<int> numNodesPerElem = mesh.numNodesPerElement;
+	int numNodes = mesh.numNodes;
+	int numElements = mesh.numElements;
+	Operations oper;
+	vector<vector<double>> flux;
+	
+	vector<vector<double>> unitaryNormal;
+	vector<vector<double>> unitaryNormalPosition;
+
+	for (int i = 0; i < elemIDs.size(); i++)
+	{
+		int thisElemID = elemIDs[i];
+		int thisElemType = elemTypes[thisElemID];
+
+		vector<int> thisElemNodes = elemNodes[thisElemID];
+		double this_ElemFlux = 0; this_ElemFlux;
+		if (elemTypes[i] < 3)
+		{
+			//Gets the nodes of the surface element
+			int PointID = thisElemNodes[0];
+			vector<double> P1 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+			PointID = thisElemNodes[1];
+			vector<double> P2 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+			PointID = thisElemNodes[2];
+			vector<double> P3 = { nodesCoordinates[PointID][0],nodesCoordinates[PointID][1],nodesCoordinates[PointID][2] };
+
+			Vector1D thisMath;
+			vector<double> A = thisMath.subtract(P2, P1);
+			vector<double> B = thisMath.subtract(P3, P1);
+			vector<double> AxB = thisMath.crossProduct(A, B);
+			double absAxB = thisMath.Abs(AxB);
+			vector<double> unitNormal = thisMath.multiScal(AxB, 1.0 / absAxB);
+
+			//Area of the surface element
+			area.push_back(0.5*absAxB);
+
+			vector <int> thisElemPointsID = pointsIDPerElement[i];
+
+			GaussLegendrePoints thisElemGauss(thisElemType);
+			int numGaussPoints = thisElemGauss.pointsCoordinates.rows;
+			double sumBn = 0;
+			for (int pointCounter = 0; pointCounter < numGaussPoints; pointCounter++)
+			{
+
+				//UVP
+				vector<double>pFielduv;
+				pFielduv = thisElemGauss.pointsCoordinates.mat[pointCounter];
+
+				//XYZ
+				vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, thisElemID, mesh, pFielduv);
+
+				unitaryNormal.push_back(unitNormal);
+				unitaryNormalPosition.push_back(pFieldxy);
+
+				//Field at this point
+				vector<double> fieldThisPoint = field[thisElemPointsID[pointCounter]];
+				vector<double> thisTangent = thisMath.multiScal(thisMath.crossProduct(unitNormal, thisMath.crossProduct(unitNormal, fieldThisPoint)), -1.0);
+				vector<double> thisNormal = thisMath.subtract(fieldThisPoint, thisTangent);
+
+				tangent.push_back(thisTangent);
+				normal.push_back(thisNormal);
+
+
+				//Check the direction of the fields
+				double k_direction = 1;
+				double r = thisMath.dot(thisNormal, unitNormal);
+				if (r < 0.0)
+					k_direction = -1.0;
+
+				//sumBn
+				double Bn = k_direction*4 * M_PI*pow(10, -7)*thisMath.Abs(thisNormal);
+				sumBn += Bn;
+			}
+			double thisFlux = sumBn*0.5*absAxB / numGaussPoints;
+			vector<double> thisData = { double(thisElemID),thisFlux };
+			flux.push_back(thisData);
+		}
+	}
+
+
+	PostProcessing post;
+	post.writeVectorField(pointsCoordinates, tangent, "Ht", path + "\\results\\" + fileName + "_tangent.txt");
+	post.writeVectorField(pointsCoordinates, normal, "Hn", path + "\\results\\" + fileName + "_normal.txt");
+	post.writeVectorField(unitaryNormalPosition, unitaryNormal, "Normal unitary", path + "\\results\\" + fileName + "_normal_nitary.txt");
+
+	post.writeDataResults(flux, path, "flux_surface");
 
 }
 
