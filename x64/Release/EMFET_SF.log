@@ -1,17 +1,17 @@
 ﻿  Tests-Biot-Savart.cpp
 Tests-Biot-Savart.cpp(282): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 Tests-Biot-Savart.cpp(292): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(551): warning C4129: 'G': unrecognized character escape sequence
-Tests-Biot-Savart.cpp(560): warning C4129: 'G': unrecognized character escape sequence
-Tests-Biot-Savart.cpp(818): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(839): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(871): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(888): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(550): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(559): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(817): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(838): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(870): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(887): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(900): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 Tests-Biot-Savart.cpp(901): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Tests-Biot-Savart.cpp(902): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Generating code
-  26 of 1033 functions ( 2.5%) were compiled, the rest were copied from previous compilation.
+  70 of 1036 functions ( 6.8%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    9 functions had inline decision re-evaluated but remain unchanged
+    46 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Release\EMFET_SF.exe

@@ -19,7 +19,7 @@ class GetMesh
 public:
 	GetMesh(string filePath);
 	void writeMesh(GetMesh mesh, string filePath, vector<int> IDs);
-	vector<int> defineVolumeBoundary(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors, vector<double> &area);
+	vector<int> defineVolumeBoundary(GetMesh &meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors, vector<double> &area,string project_path);
 	vector<int> getGaussPointsSurface(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area);
 
 	

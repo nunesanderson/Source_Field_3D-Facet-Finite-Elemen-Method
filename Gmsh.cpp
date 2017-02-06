@@ -238,13 +238,13 @@ vector<int> GetMesh::getGaussPointsSurface(GetMesh mesh, int phySurfaceFilter, v
 
 
 	PostProcessing post;
-	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\34_Atuador\\03_vert - Subproblems\\02_FFEM_complete");
-	post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", path + "\\results\\Gmsh_Normal_Vector.txt");
+	//string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\34_Atuador\\03_vert - Subproblems\\02_FFEM_complete");
+	//post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", path + "\\results\\Gmsh_Normal_Vector.txt");
 
 	return elementsBothDomains;
 }
 
-vector<int> GetMesh::defineVolumeBoundary(GetMesh mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors,vector<double>  &area) {
+vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors,vector<double>  &area,string file_path) {
 
 	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
 	vector<vector<int>> elemNodes = mesh.elemNodes;
@@ -360,8 +360,7 @@ vector<int> GetMesh::defineVolumeBoundary(GetMesh mesh, int phySurfaceFilter, ve
 	}
 
 	PostProcessing post;
-	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\31_Subdomain_Dular_2009\\Subdomain");
-	post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", path + "\\results\\Gmsh_Normal_Vector.txt");
+	post.writeVectorField(printNormalVectorPosition, normalVectors, "NormalVector", file_path + "results\\Gmsh_Normal_Vector.txt");
 
 	return elementsBothDomains;
 }

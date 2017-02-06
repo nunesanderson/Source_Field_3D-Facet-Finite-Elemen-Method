@@ -381,11 +381,11 @@ void TestsBiotSavart::Atuador3D()
 	vector<vector<double>> field_2 = biotSavart.integrateSolidWinding(2004, -current_Density, centerPosition_2, alongAxis, mesh, pointsCoordinates, path);
 	vector<vector<double>> fieldTotal= thisMath.sum(field_1, field_2);
 	//-------------------------------------------------------------------------------------
-	// Post processing
-	post.writeVectorField(pointsCoordinates, fieldTotal, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
+	 //Post processing
+	/*post.writeVectorField(pointsCoordinates, fieldTotal, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
 	post.writeGaussPointsIDs(Elem_IDs, pointsID, pointsCoordinates, path);
 	post.writeDataResults(fieldTotal, path, "Gauss_Points_H_field");
-
+*/
 
 	////*********************************************************************************************
 	//// VS - only
@@ -395,8 +395,7 @@ void TestsBiotSavart::Atuador3D()
 	//string HFieldFile("results\\H_Field.txt");
 	//GetMesh mesh(path + meshFile);
 	//PostProcessing post;
-	//BiotSavart biotSavart;
-	//Vector1D thisMath;
+	//	Vector1D thisMath;
 
 	//vector<int>vol = {2002,2005 };
 	//vector<int> Elem_IDs;
@@ -427,8 +426,8 @@ void TestsBiotSavart::Atuador3D()
 	//vector<vector<double>> points_list = post.readDataFile(path, "line_coordinates");
 
 	//// Biot Savart inetgration
-	//vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, points_list, path);
-	//vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	//vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(2003, current_Density, centerPosition_1, alongAxis, mesh, points_list, path);
+	//vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(2004, -current_Density, centerPosition_2, alongAxis, mesh, points_list, path);
 	//vector<vector<double>> field1LineTotal = thisMath.sum(field1Line, field2Line);
 
 	////Writes the magnetic field
@@ -440,7 +439,7 @@ void TestsBiotSavart::Atuador3D()
 	//*********************************************************************************************
 	// VS corrected
 	//*********************************************************************************************
-	//string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\31_Subdomain_Dular_2009\\FFEM_VS_corrected\\");
+	//string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\34_Atuador_vert\\FFEM_VS_corrected\\");
 	//string meshFile("model.msh");
 	//string HFieldFile("results\\H_Field.txt");
 	//GetMesh mesh(path + meshFile);
@@ -448,7 +447,7 @@ void TestsBiotSavart::Atuador3D()
 	//BiotSavart biotSavart;
 	//Vector1D thisMath;
 
-	//vector<int> vol = { 174 };
+	//vector<int> vol = {2002,2005};
 	//vector<int> Elem_IDs;
 
 	//vector<vector<double>>pointsCoordinates;
@@ -458,13 +457,13 @@ void TestsBiotSavart::Atuador3D()
 
 	////-------------------------------------------------------------------------------------
 	//// Biot Savart integration
-	//double current_Density = pow(10, 7)*1000.0;
-	//vector<double>centerPosition = { 0.01,0.00,0.01 };
-	//int volIDCurrente = 173;
-	//int alongAxis = 0;
-	//vector<vector<double>> field1 = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
-	//vector<vector<double>> field2 = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
-	//vector<vector<double>> fieldTotal = thisMath.sum(field1, field2);
+	//double current_Density = 3.0*pow(10, 7);
+	//vector<double>centerPosition_1 = { -0.04,0.00,0.00 };
+	//vector<double>centerPosition_2 = { 0.04,0.00,0.00 };
+	//int alongAxis = 2;
+	//vector<vector<double>> field_1 = biotSavart.integrateSolidWinding(2003, current_Density, centerPosition_1, alongAxis, mesh, pointsCoordinates, path);
+	//vector<vector<double>> field_2 = biotSavart.integrateSolidWinding(2004, -current_Density, centerPosition_2, alongAxis, mesh, pointsCoordinates, path);
+	//vector<vector<double>> fieldTotal = thisMath.sum(field_1, field_2);
 	////-------------------------------------------------------------------------------------
 	////Post processing
 	//post.writeVectorField(pointsCoordinates, fieldTotal, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
@@ -476,8 +475,8 @@ void TestsBiotSavart::Atuador3D()
 	//vector<vector<double>> points_list = post.readDataFile(path, "line_coordinates");
 
 	//// Biot Savart inetgration
-	//vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, points_list, path);
-	//vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	//vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(2003, current_Density, centerPosition_1, alongAxis, mesh, points_list, path);
+	//vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(2004, -current_Density, centerPosition_2, alongAxis, mesh, points_list, path);
 	//vector<vector<double>> field1LineTotal = thisMath.sum(field1Line, field2Line);
 
 
@@ -489,7 +488,7 @@ void TestsBiotSavart::Atuador3D()
 	////*********************************************************************************************
 	////BS correction
 	////*********************************************************************************************
-	//vector<int> surf_ID = { 178 };
+	//vector<int> surf_ID = { 2006 };
 	//vector<int> Elem_IDsSF;
 
 	//vector<vector<double>>pointsCoordinatesSF;
@@ -500,8 +499,8 @@ void TestsBiotSavart::Atuador3D()
 	////External surface
 
 	//// Biot Savart inetgration
-	//vector<vector<double>> field1LineBS = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
-	//vector<vector<double>> field2LineBS = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
+	//vector<vector<double>> field1LineBS = biotSavart.integrateSolidWinding(2003, current_Density, centerPosition_1, alongAxis, mesh, pointsCoordinatesSF, path);
+	//vector<vector<double>> field2LineBS = biotSavart.integrateSolidWinding(2004, -current_Density, centerPosition_2, alongAxis, mesh, pointsCoordinatesSF, path);
 	//vector<vector<double>> field1LineTotalBS = thisMath.sum(field1LineBS, field2LineBS);
 
 
@@ -783,7 +782,7 @@ void TestsBiotSavart::AdaptiveProcess(double fw)
 
 	////////////////////////////////////////////////////////////////
 	//Files
-	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\34_Atuador\\01_hor\\04_FFEM_complet\\");
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\37_Atuador_hor\\04_FFEM_coarse\\");
 	string meshFile_points("model.msh");
 	string HFieldFile("results\\H_Field.txt");
 	GetMesh mesh_points(path + meshFile_points);
@@ -970,5 +969,243 @@ void TestsBiotSavart::AdaptiveProcess(double fw)
 	//Writes the magnetic field
 	post.writeDataResults(field, path, "Gauss_Points_H_field");
 
+
+}
+
+
+void TestsBiotSavart::AtuadorHor()
+{
+
+	////////////////////////////////////////////////////////////////
+	//Files
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\37_Atuador_hor\\04_FFEM_coarse\\");
+	string meshFile_points("model.msh");
+	string HFieldFile("results\\H_Field.txt");
+	GetMesh mesh_points(path + meshFile_points);
+
+	////////////////////////////////////////////////////////////////
+	//Inegration Points
+	vector<vector<int>>pointsID;
+	Operations points;
+	vector<int>volID = { 1000,1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008,1009 };
+	vector<int> elem_ID_list;
+
+	vector<int> Elem_IDs;
+	vector<vector<double>>pointsCoordinates;
+	points.getGaussPointsVol(Elem_IDs, pointsCoordinates, pointsID, mesh_points, volID);
+
+
+	////////////////////////////////////////////////////////////////
+	// Biot Savart inetgration
+	BiotSavart biotSavart;
+	double current_Density = 3.0*pow(10, 7);
+	vector<double>centerPosition = { 0.01,0.00,0.01 };
+	int volIDCurrente = 1006;
+	int alongAxis = 0;
+	vector<vector<double>> field = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh_points, pointsCoordinates, path);
+
+
+	//////////////////////////////////////////////////////////////////
+	// Post processing
+	PostProcessing post;
+	
+
+	//writes the field solution to Gmsh
+	post.writeVectorField(pointsCoordinates, field, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
+
+	//Writes the Gauss points information
+	post.writeGaussPointsIDs(Elem_IDs, pointsID, pointsCoordinates, path);
+
+	//Writes the magnetic field
+	post.writeDataResults(field, path, "Gauss_Points_H_field");
+
+
+}
+void TestsBiotSavart::PerfectElectric()
+{
+	//*********************************************************************************************
+	// VS corrected
+	//*********************************************************************************************
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\35_Subdomain_Dular_2009_electric\\FFEM_Complete\\");
+	string meshFile("model.msh");
+	string HFieldFile("results\\H_Field.txt");
+	GetMesh mesh(path + meshFile);
+	PostProcessing post;
+	BiotSavart biotSavart;
+	Vector1D thisMath;
+
+	//vector<int> vol = { 174 };
+	//vector<int> Elem_IDs;
+
+	//vector<vector<double>>pointsCoordinates;
+	//vector<vector<int>>pointsID;
+
+	Operations points;
+	//points.getGaussPointsVol(Elem_IDs, pointsCoordinates, pointsID, mesh, vol);
+
+	//-------------------------------------------------------------------------------------
+	// Biot Savart integration
+	double current_Density = pow(10, 7)*1000.0;
+	vector<double>centerPosition = { 0.01,0.00,0.01 };
+	int volIDCurrente = 173;
+	int alongAxis = 0;
+	//vector<vector<double>> field1 = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
+	//vector<vector<double>> field2 = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
+	//vector<vector<double>> fieldTotal = thisMath.sum(field1, field2);
+	////-------------------------------------------------------------------------------------
+	////Post processing
+	//post.writeVectorField(pointsCoordinates, fieldTotal, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
+	//post.writeGaussPointsIDs(Elem_IDs, pointsID, pointsCoordinates, path);
+	//post.writeDataResults(fieldTotal, path, "Gauss_Points_H_field");
+
+	//-------------------------------------------------------------------------------------
+	// Line
+	vector<vector<double>> points_list = post.readDataFile(path, "line_coordinates");
+
+	// Biot Savart inetgration
+	vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	vector<vector<double>> field1LineTotal = thisMath.sum(field1Line, field2Line);
+
+
+	//Writes the magnetic field
+	post.writeDataResults(field1LineTotal, path, "line_field_BS");
+
+	//writes the field solution to Gmsh
+	post.writeVectorField(points_list, field1LineTotal, "H", path + "\\results\\line_field_BS_Gmsh.txt");
+
+	//*********************************************************************************************
+	//BS correction and Bn
+	//*********************************************************************************************
+	vector<int> surf_ID = {177,178 };
+	vector<int> Elem_IDsSF;
+
+	vector<vector<double>>pointsCoordinatesSF;
+	vector<vector<int>>pointsIDSF;
+	points.getGaussPointsVol(Elem_IDsSF, pointsCoordinatesSF, pointsIDSF, mesh, surf_ID);
+
+	//-------------------------------------------------------------------------------------
+	//External surface
+
+	// Biot Savart inetgration
+	vector<vector<double>> field1LineBS = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
+	vector<vector<double>> field2LineBS = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
+	vector<vector<double>> field1LineTotalBS = thisMath.sum(field1LineBS, field2LineBS);
+
+
+	//get component of the field
+	vector<vector<double>> tangent;
+	vector<vector<double>> normal;
+	vector<double> areas;
+
+	post.getFieldComponents(normal, tangent, areas, field1LineTotalBS, pointsCoordinatesSF, Elem_IDsSF, pointsIDSF, "Gauss_Points_H_field_surface", path, mesh);
+
+}
+
+
+void TestsBiotSavart::PerfectMagnetic()
+{
+	//*********************************************************************************************
+	// Total correction
+	//*********************************************************************************************
+	string path("C:\\Anderson\\Pessoal\\01_Doutorado\\10_Testes\\36_Subdomain_Dular_2009_magnetic\\FFEM_Complete\\");
+	string meshFile("model.msh");
+	string HFieldFile("results\\H_Field.txt");
+	GetMesh mesh(path + meshFile);
+	PostProcessing post;
+	BiotSavart biotSavart;
+	Vector1D thisMath;
+
+	//*********************************************************************************************
+	// Layer of elements - Inner
+	vector<int> vol = { 175 };
+	int sufaceID = 177;
+	vector<vector<double>>pointsCoordinates;
+	vector<vector<double>>normaVectors;
+	vector<double>areas;
+	vector<vector<int>>pointsID;
+	vector<int> elemIDLayer;
+	
+	elemIDLayer=mesh.defineVolumeBoundary(mesh, sufaceID, vol, 2, normaVectors, areas, path);
+
+	Operations points;
+	points.getGaussPointsVol(elemIDLayer, pointsCoordinates, pointsID, mesh, vol);
+
+	//-------------------------------------------------------------------------------------
+	// Biot Savart integration
+	double current_Density = pow(10, 7)*1000.0;
+	vector<double>centerPosition = { 0.01,0.00,0.01 };
+	int volIDCurrente = 173;
+	int alongAxis = 0;
+	vector<vector<double>> field1 = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
+	vector<vector<double>> field2 = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinates, path);
+	vector<vector<double>> fieldTotal = thisMath.sum(field1, field2);
+
+	//-------------------------------------------------------------------------------------
+	//Field components along the element surface
+	int counter = 0;
+	vector<vector<double>>normalField;
+	vector<vector<double>>tangentlField;
+	vector<vector<double>> fieldTotalInv;
+	
+	for each (vector<double> n in normaVectors)
+	{
+		double vdotn = thisMath.dot(fieldTotal[counter], n);
+		vector<double> this_normalField = thisMath.multiScal(n,vdotn);
+		vector<double>this_tangentField = thisMath.subtract(fieldTotal[counter], this_normalField);
+		normalField.push_back(this_normalField);
+		tangentlField.push_back(thisMath.multiScal(this_tangentField, -1));
+		fieldTotalInv.push_back(thisMath.multiScal(fieldTotal[counter], -1));
+		counter++;
+	}
+	//-------------------------------------------------------------------------------------
+	//Post processing
+	post.writeVectorField(pointsCoordinates, fieldTotal, "H", path + "\\results\\Gauss_Points_H_field_Gmsh.txt");
+	post.writeGaussPointsIDs(elemIDLayer, pointsID, pointsCoordinates, path);
+	post.writeDataResults(fieldTotal, path, "Gauss_Points_H_field");
+	post.writeVectorField(pointsCoordinates, normalField, "H", path + "\\results\\Gauss_Points_H_field_normal_Gmsh.txt");
+	post.writeVectorField(pointsCoordinates, tangentlField, "H", path + "\\results\\Gauss_Points_H_field_tangential_Gmsh.txt");
+
+	//-------------------------------------------------------------------------------------
+	// Line
+	vector<vector<double>> points_list = post.readDataFile(path, "line_coordinates");
+
+	// Biot Savart inetgration
+	vector<vector<double>> field1Line = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	vector<vector<double>> field2Line = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, points_list, path);
+	vector<vector<double>> field1LineTotal = thisMath.sum(field1Line, field2Line);
+
+
+	//Writes the magnetic field
+	post.writeDataResults(field1LineTotal, path, "line_field_BS");
+
+	//writes the field solution to Gmsh
+	post.writeVectorField(points_list, field1LineTotal, "H", path + "\\results\\line_field_BS_Gmsh.txt");
+
+	//*********************************************************************************************
+	//BS correction
+	//*********************************************************************************************
+	vector<int> surf_ID = { 178,177 };
+	vector<int> Elem_IDsSF;
+
+	vector<vector<double>>pointsCoordinatesSF;
+	vector<vector<int>>pointsIDSF;
+	points.getGaussPointsVol(Elem_IDsSF, pointsCoordinatesSF, pointsIDSF, mesh, surf_ID);
+
+	//-------------------------------------------------------------------------------------
+	//External surface
+
+	// Biot Savart inetgration
+	vector<vector<double>> field1LineBS = biotSavart.integrateSolidWinding(volIDCurrente, current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
+	vector<vector<double>> field2LineBS = biotSavart.integrateSolidWinding(176, -current_Density, centerPosition, alongAxis, mesh, pointsCoordinatesSF, path);
+	vector<vector<double>> field1LineTotalBS = thisMath.sum(field1LineBS, field2LineBS);
+
+
+	//get component of the field
+	vector<vector<double>> tangent;
+	vector<vector<double>> normal;
+	vector<double>areasSF;
+
+	post.getFieldComponents(normal, tangent, areasSF, field1LineTotalBS, pointsCoordinatesSF, Elem_IDsSF, pointsIDSF, "Gauss_Points_H_field_surface", path, mesh);
 
 }

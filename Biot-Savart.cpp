@@ -39,8 +39,8 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	else
 	{
 
-		k = current / (4.0*PI*pow(R_abs, 3.0));
-		//k = current / (2.0*PI*pow(R_abs, 2.0));
+		//k = current / (4.0*PI*pow(R_abs, 3.0));
+		k = current / (2.0*PI*pow(R_abs, 2.0));
 
 	}
 
@@ -145,11 +145,11 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 				double component1 = current_Density*sin(theta);
 				double component2 = -current_Density*cos(theta);
 
-				vector<double> currentDensityVec(3);
+			/*	vector<double> currentDensityVec(3);
 				currentDensityVec[plane[0]]= component1;
-				currentDensityVec[plane[1]] = component2;
+				currentDensityVec[plane[1]] = component2;*/
 
-				//vector<double> currentDensityVec = { 0 ,0,current_Density};
+				vector<double> currentDensityVec = { 0 ,0,current_Density};
 
 				//save the current density plot
 				currentDensity.push_back(currentDensityVec);

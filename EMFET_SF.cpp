@@ -26,9 +26,7 @@ int main()
 	Messages messages;
 
 	TestsBiotSavart testBS;
-	double fw = 1.0;
-	double elapsed_secs = 0;
-	testBS.Atuador3D();
+	testBS.PerfectMagnetic();
 	messages.logMessage("Finished!");
 	getchar();  
 	return 0;

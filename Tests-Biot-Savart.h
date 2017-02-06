@@ -19,10 +19,13 @@ public:
 	void currentLoop();
 	void TwoD();
 	void Atuador3D();
+	void AtuadorHor();
 	void Teste3D();
 	void Teste3D_core();
 	void Subdomain();
 	void AdaptiveProcess(double fw);
+	void PerfectElectric();
+	void PerfectMagnetic();
 private:
 
 };
