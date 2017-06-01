@@ -18,11 +18,11 @@ class GetMesh
 {
 public:
 	GetMesh(string filePath);
-	void writeMesh(GetMesh mesh, string filePath, vector<int> IDs);
-	vector<int> defineVolumeBoundary(GetMesh &meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes,vector<vector<double>> &normalVectors, vector<double> &area,string project_path);
+	void writeMesh(GetMesh mesh, string filePath, vector<int> IDs, vector<int> VolID);
+	vector<int> defineVolumeBoundary(GetMesh &meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors, vector<double> &area, string project_path);
 	vector<int> getGaussPointsSurface(GetMesh meshData, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area);
 
-	
+
 	~GetMesh();
 	vector<int> physicalTags;
 	vector<vector<double>> nodesCoordinates;
@@ -32,6 +32,7 @@ public:
 	vector<int> elementaryTags;
 	int numNodes;
 	int numElements;
+	int num3DElements;
 };
 
 class GetTxtData {
@@ -46,8 +47,8 @@ private:
 class PostProcessing {
 public:
 	void writeVectorField(vector<vector<double>> coordinates, vector<vector<double>> fields, string fieldName, string path);
-	void writeGaussPointsIDs(vector<int>elemIDs,vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path);
-	void writeDataResults(vector<vector<double>> twoDArrayData, string path,string fileName);
+	void writeGaussPointsIDs(vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path);
+	void writeDataResults(vector<vector<double>> twoDArrayData, string path, string fileName);
 	void getFieldComponents(vector<vector<double>> &normal, vector<vector<double>> &tangent, vector<double> area, vector<vector<double>> field, vector<vector<double>> pointsCoordinates, vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, string fileName, string path, GetMesh mesh);
 	vector<vector<double>> readDataFile(string path, string fileName);
 

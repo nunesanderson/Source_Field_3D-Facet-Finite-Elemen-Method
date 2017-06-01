@@ -25,7 +25,7 @@ int main()
 {
 	Messages messages;
 	TestsBiotSavart testBS;
-	testBS.AdaptiveProcessWinding(0.95);
+	testBS.AdaptiveProcess(0.5);
 	messages.logMessage("Finished!");
 	getchar();  
 	return 0;

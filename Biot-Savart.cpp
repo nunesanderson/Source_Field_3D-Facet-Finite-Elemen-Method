@@ -8,6 +8,7 @@ using namespace std;
 #include <fstream>
 #include <sstream>
 #include <stdio.h>
+#include <ctime>
 
 /* ------------------------------------------------------------------------
 Internal includes
@@ -20,9 +21,6 @@ Internal includes
 
 const double PI = 3.1415926535897;
 
-
-
-
 vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, vector <double> currentPoint, vector <double> dlUnitary, double current)
 {
 	Vector1D thisMath;
@@ -31,7 +29,7 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
 	
-	double lim = 1 * pow(10, -3);
+	double lim = 2.0 * pow(10, -7);
 	if (R_abs < lim)
 	{
 		k = 0;
@@ -39,8 +37,8 @@ vector<double> BiotSavart::biotSavartEquationThreeD(vector <double> fieldPoint, 
 	else
 	{
 
-		//k = current / (4.0*PI*pow(R_abs, 3.0));
-		k = current / (2.0*PI*pow(R_abs, 2.0));
+		k = current / (4.0*PI*pow(R_abs, 3.0));
+		//k = current / (2.0*PI*pow(R_abs, 2.0));
 
 	}
 
@@ -56,16 +54,18 @@ vector<double> BiotSavart::biotSavartEquationTwoD(vector <double> fieldPoint, ve
 	double R_abs = thisMath.Abs(R);
 	vector<double> vector_product = thisMath.crossProduct(dlUnitary, R);
 	double k;
-	double lim = 100*pow(10, -4);
-	if (R_abs < lim)
+	double lim = 3*pow(10, -3);
+
+	if (R_abs<lim)
 	{
+
 		k = 0;
 	}
 	else
 	{
-
-		k = current / (2.0*PI*pow(R_abs, 2.0));
+	k = current / (2.0*PI*pow(R_abs, 2.0));
 	}
+
 
 	vector<double> dH_P = thisMath.multiScal(vector_product, k);
 
@@ -102,6 +102,7 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 	//Types of elements
 	vector<int> validElemTypes = { 4,5,6,7,11 };
 
+	clock_t begin = clock();
 	//Integration loop
 	for (int i = 0; i < numElements; i++)
 	{
@@ -138,18 +139,16 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 					plane.push_back(1);
 				}
 
-
-
 				//current density vector
 				double theta = atan2(pFieldxy[plane[1]]-centerPosition[plane[1]], pFieldxy[plane[0]]-centerPosition[plane[0]]);
 				double component1 = current_Density*sin(theta);
 				double component2 = -current_Density*cos(theta);
 
-			/*	vector<double> currentDensityVec(3);
+				vector<double> currentDensityVec(3);
 				currentDensityVec[plane[0]]= component1;
-				currentDensityVec[plane[1]] = component2;*/
+				currentDensityVec[plane[1]] = component2;
 
-				vector<double> currentDensityVec = { 0 ,0,current_Density};
+				//vector<double> currentDensityVec = { 0 ,0,current_Density};
 
 				//save the current density plot
 				currentDensity.push_back(currentDensityVec);
@@ -173,6 +172,10 @@ vector<vector<double>>  BiotSavart::integrateSolidWinding(int volID, double curr
 			}
 		}
 	}
+	clock_t end = clock();
+	double elapsed_milisecs = 1000.0*double(end - begin) / CLOCKS_PER_SEC;
+
+	messages.logMessage("Elapsed time: "+ to_string(elapsed_milisecs)+"ms");
 	messages.logMessage("BiotSavart - Solid domain integration: Done");
 
 	PostProcessing post;
@@ -208,8 +211,9 @@ void BiotSavart::integrateTwoD(vector<vector<double>> &Hresults, int volID, doub
 
 	//Types of elements
 	vector<int> validElemTypes = { 2,3,9,10};
-
+	
 	//Integration loop
+	clock_t begin = clock();
 	for (int i = 0; i < numElements; i++)
 	{
 		int thisElemType = elemTypes[i];
@@ -257,6 +261,11 @@ void BiotSavart::integrateTwoD(vector<vector<double>> &Hresults, int volID, doub
 
 		}
 	}
+
+	clock_t end = clock();
+	double elapsed_milisecs = 1000.0*double(end - begin) / CLOCKS_PER_SEC;
+
+	messages.logMessage("Elapsed time: " + to_string(elapsed_milisecs) + "ms");
 	messages.logMessage("BiotSavart - 2D domain integration: Done");
 
 	PostProcessing post;
@@ -289,6 +298,7 @@ vector<vector<double>>  BiotSavart::integrateLine(double current,int volID,GetMe
 
 	bool plotDl = true;
 
+	clock_t begin = clock();
 	//Integration loop
 	for (int i = 0; i < numElements; i++)
 	{
@@ -340,6 +350,10 @@ vector<vector<double>>  BiotSavart::integrateLine(double current,int volID,GetMe
 			break;
 		}
 	}
+
+	clock_t end = clock();
+	double elapsed_milisecs = 1000.0*double(end - begin) / CLOCKS_PER_SEC;
+	messages.logMessage("Elapsed time: " + to_string(elapsed_milisecs) + "ms");
 
 	PostProcessing teste;
 	teste.writeVectorField(dlListCoord, dlListField, "dl's", path + "\\results\\dl.txt");

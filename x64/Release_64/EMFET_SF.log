@@ -1,12 +1,19 @@
-﻿  Biot-Savart.cpp
-Biot-Savart.cpp(95): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Biot-Savart.cpp(92): warning C4101: 'thisMath': unreferenced local variable
-Biot-Savart.cpp(203): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-Biot-Savart.cpp(200): warning C4101: 'thisMath': unreferenced local variable
-Biot-Savart.cpp(285): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+﻿  ShapeFunctions.cpp
+ShapeFunctions.cpp(685): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Tests-Biot-Savart.cpp
+Tests-Biot-Savart.cpp(295): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(305): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(375): warning C4101: 'post': unreferenced local variable
+Tests-Biot-Savart.cpp(562): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(571): warning C4129: 'G': unrecognized character escape sequence
+Tests-Biot-Savart.cpp(585): warning C4101: 'thisMath': unreferenced local variable
+Tests-Biot-Savart.cpp(948): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(970): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(1000): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+Tests-Biot-Savart.cpp(1110): warning C4101: 'points': unreferenced local variable
   Generating code
-  31 of 1038 functions ( 3.0%) were compiled, the rest were copied from previous compilation.
+  37 of 1447 functions ( 2.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    10 functions had inline decision re-evaluated but remain unchanged
+    8 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   EMFET_SF.vcxproj -> C:\Anderson\Pessoal\01_Doutorado\3_Codigos\EMFET_SF\x64\Release_64\EMFET_SF.exe

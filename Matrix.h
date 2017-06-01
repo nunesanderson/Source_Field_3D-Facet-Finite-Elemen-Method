@@ -38,8 +38,6 @@ public:
 	vector<double> crossProduct(vector <double> u, vector <double> v);
 	double distance(vector <double> u, vector <double> v);
 	double dot(vector <double> u, vector <double> v);
-
-	
 };
 
 

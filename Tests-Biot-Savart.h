@@ -20,9 +20,13 @@ public:
 	void TwoD();
 	void Atuador3D();
 	void AtuadorHor();
+	void AtuadorVert();
+	void AtuadorVert_VS();
 	void Teste3D();
+	void H_discon();
 	void Teste3D_core();
 	void Subdomain();
+	void AdaptiveProcessWinding(double fw);
 	void AdaptiveProcess(double fw);
 	void PerfectElectric();
 	void PerfectMagnetic();

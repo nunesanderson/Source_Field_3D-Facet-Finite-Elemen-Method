@@ -34,6 +34,8 @@ GetMesh::GetMesh(string filePath)
 	bool checkMax = false;
 	int startElements;
 	int startNodes = 0;
+	num3DElements = 0;
+
 
 	for each (string str in data)
 	{
@@ -110,17 +112,25 @@ GetMesh::GetMesh(string filePath)
 		numNodesPerElement.push_back(colCounter);
 
 		//Type of the elements
-		elemTypes.push_back(stoi(thisElement[1].c_str()));
+		int thisElemType = stoi(thisElement[1].c_str());
+		elemTypes.push_back(thisElemType);
 
 		//Tags of the elements
 		physicalTags.push_back(stoi(thisElement[3].c_str()));
 		elementaryTags.push_back(stoi(thisElement[4].c_str()));
+
+		//Number of 3-D elements
+		if (thisElemType>=4)
+		{
+			num3DElements++;
+		}
 	}
 	messages.logMessage("Reading Gmsh mesh: Done");
 }
 
 
-void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
+
+void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs, vector<int> VolID) {
 
 	Messages messages;
 	messages.logMessage("Writing Gmsh mesh");
@@ -149,30 +159,41 @@ void GetMesh::writeMesh(GetMesh mesh, string filePath, vector<int> IDs) {
 	size_t sizeIDs = IDs.size();
 	myfile << "$EndNodes\n";
 	myfile << "$Elements\n";
-	myfile << sizeIDs << "\n";
+	vector<int> listElem;
 
-	for (int i = 0; i < sizeIDs; i++)
+	for (size_t i = 0; i < numElements; i++)
 	{
-		int thisID = IDs[i];
-		myfile << i + 1 << " " << elemTypes[thisID] << " " << "2" << " " << physicalTags[thisID] << " " << elementaryTags[thisID] << " ";
 
-		for (size_t k = 0; k < elemNodes[thisID].size(); k++)
+		//Checks is this element is in the list
+		if (std::find(IDs.begin(), IDs.end(), i) != IDs.end())
 		{
-			myfile << elemNodes[thisID][k] + 1;
-			if (k < elemNodes[thisID].size() - 1)
+			listElem.push_back(i);
+		}
+		
+	}
+
+	myfile << listElem.size() << "\n";
+	int counter = 0;
+	for each (int elemID in listElem)
+	{
+		myfile << counter + 1 << " " << elemTypes[elemID] << " " << "2" << " " << physicalTags[elemID] << " " << elementaryTags[elemID] << " ";
+		for (size_t k = 0; k < elemNodes[elemID].size(); k++)
+		{
+			myfile << elemNodes[elemID][k] + 1;
+			if (k < elemNodes[elemID].size() - 1)
 			{
 				myfile << " ";
 			}
 		}
 		myfile << "\n";
+		counter++;
 	}
 	myfile << "$EndElements\n";
 
 	myfile.close();
 	messages.logMessage("Writing Gmsh mesh: Done");
+
 }
-
-
 
 vector<int> GetMesh::getGaussPointsSurface(GetMesh mesh, int phySurfaceFilter, vector<int> phyVolumeFilter, vector<vector<double>> &normalVectors, vector<double> &area) {
 
@@ -244,7 +265,7 @@ vector<int> GetMesh::getGaussPointsSurface(GetMesh mesh, int phySurfaceFilter, v
 	return elementsBothDomains;
 }
 
-vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors,vector<double>  &area,string file_path) {
+vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, vector <int> phyVolumeFilter, int atLeastNumNodes, vector<vector<double>> &normalVectors, vector<double>  &area, string file_path) {
 
 	vector<vector<double>>  nodesCoordinates = mesh.nodesCoordinates;
 	vector<vector<int>> elemNodes = mesh.elemNodes;
@@ -275,7 +296,8 @@ vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, v
 				this2DElemNodes.push_back(elemNodes[i][k]);
 			}
 
-			for (int elemCounter = 0; elemCounter < numElements; elemCounter++)
+
+			for (int elemCounter = i; elemCounter < numElements; elemCounter++)
 			{
 
 				if (elemTypes[elemCounter] >= 4 && std::find(phyVolumeFilter.begin(), phyVolumeFilter.end(), physicalTags[elemCounter]) != phyVolumeFilter.end())
@@ -295,8 +317,9 @@ vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, v
 					int foundCounter = 0;
 					for (int DElemCounter = 0; DElemCounter < numNodes2D; DElemCounter++)
 					{
-						if (std::find(this3DElemNodes.begin(), this3DElemNodes.end(), this2DElemNodes[DElemCounter]) != this3DElemNodes.end())
+						if (std::find(this3DElemNodes.begin(), this3DElemNodes.end(), this2DElemNodes[DElemCounter]) != this3DElemNodes.end()) {
 							foundCounter++;
+						}
 
 						if (foundCounter == atLeastNumNodes)
 						{
@@ -308,9 +331,15 @@ vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, v
 					if (addThisElem)
 					{
 						//Gets this element ID
-						elementsBothDomains.push_back(elemCounter);
+						if (std::find(elementsBothDomains.begin(), elementsBothDomains.end(), elemCounter) != elementsBothDomains.end())
+						{
+						}
+						else {
+							elementsBothDomains.push_back(elemCounter);
+						}
 						twoDElementNodes.push_back(this2DElemNodes);
 						globalID.push_back(i);
+						//break;
 					}
 				}
 			}
@@ -337,7 +366,7 @@ vector<int> GetMesh::defineVolumeBoundary(GetMesh &mesh, int phySurfaceFilter, v
 		vector<double> AxB = thisMath.crossProduct(A, B);
 		double absAxB = thisMath.Abs(AxB);
 		vector<double> normal = thisMath.multiScal(AxB, 1.0 / absAxB);
-		
+
 		//Area of the surface element
 		area.push_back(0.5*absAxB);
 
@@ -370,6 +399,8 @@ GetTxtData::~GetTxtData(void) {}
 GetTxtData::GetTxtData(string filePath) {
 	string line;
 	ifstream myfile(filePath);
+	Messages messages;
+	
 	numLines = 0;
 	if (myfile.is_open())
 	{
@@ -380,7 +411,7 @@ GetTxtData::GetTxtData(string filePath) {
 		}
 		myfile.close();
 	}
-	else cout << "Unable to open file";
+	else messages.logMessage("Unable to open this file:" + filePath);;
 }
 
 void PostProcessing::writeVectorField(vector<vector<double>> coordinates, vector<vector<double>> fields, string fieldName, string path) {
@@ -403,8 +434,6 @@ void PostProcessing::writeVectorField(vector<vector<double>> coordinates, vector
 
 
 }
-
-
 
 void PostProcessing::writeGaussPointsIDs(vector<int>elemIDs, vector<vector<int>> pointsIDPerElement, vector<vector<double>> pointsCoordinates, string path)
 {
@@ -448,13 +477,12 @@ void PostProcessing::writeGaussPointsIDs(vector<int>elemIDs, vector<vector<int>>
 	Writes the coordinates
 	---------------------------------------------------------------------------*/
 	myfile.open(path + fileNameCoord);
-	for each (vector<int> thisElemPoints in pointsIDPerElement)
+
+	for each (vector<double> point in pointsCoordinates)
 	{
-		for each (int i in thisElemPoints)
-		{
-			myfile << pointsCoordinates[i][0] << " " << pointsCoordinates[i][1] << " " << pointsCoordinates[i][2] << "\n";
-		}
+			myfile << point[0] << " " << point[1] << " " << point[2] << "\n";
 	}
+
 	myfile.close();
 
 	messages.logMessage("Writing Gauss points: Done");
@@ -500,7 +528,7 @@ void PostProcessing::getFieldComponents(vector<vector<double>> &normal, vector<v
 	int numElements = mesh.numElements;
 	Operations oper;
 	vector<vector<double>> flux;
-	
+
 	vector<vector<double>> unitaryNormal;
 	vector<vector<double>> unitaryNormalPosition;
 
@@ -565,7 +593,7 @@ void PostProcessing::getFieldComponents(vector<vector<double>> &normal, vector<v
 					k_direction = -1.0;
 
 				//sumBn
-				double Bn = k_direction*4 * M_PI*pow(10, -7)*thisMath.Abs(thisNormal);
+				double Bn = k_direction * 4 * M_PI*pow(10, -7)*thisMath.Abs(thisNormal);
 				sumBn += Bn;
 			}
 			double thisFlux = sumBn*0.5*absAxB / numGaussPoints;
@@ -596,7 +624,6 @@ vector<vector<double>> PostProcessing::readDataFile(string path, string fileName
 	int rows = datafile.numLines;
 	vector<vector <double>> allLinesList;
 
-
 	for each (string str in data)
 	{
 		istringstream iss(str);
@@ -614,7 +641,6 @@ vector<vector<double>> PostProcessing::readDataFile(string path, string fileName
 		} while (iss);
 		allLinesList.push_back(thisLine);
 	}
-
 
 	return allLinesList;
 }

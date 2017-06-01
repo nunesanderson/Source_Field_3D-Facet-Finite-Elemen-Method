@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdexcept>
 #include <limits>
+#include <vector>
+#include <numeric>
 using namespace std;
 
 
@@ -769,6 +771,7 @@ void Operations::getGaussPoints_private(vector<int> &elem_ID_list, vector<vector
 	vector< vector<double>> thisGauss;
 
 	int counter = 0;
+
 	for each (int elem in elem_ID_list)
 	{
 		int thisElemType = mesh.elemTypes[elem];
@@ -794,94 +797,55 @@ void Operations::getGaussPoints_private(vector<int> &elem_ID_list, vector<vector
 }
 
 
-void Operations::getGaussPointsAdaptive(vector<int> &elem_ID_list, int &point_counter, vector<vector<double>>& gaussPointsCoord, vector<vector<int>>& pointsIDPerElement, GetMesh mesh, vector<int> GaussPointID)
+void Operations::getGaussPointsAdaptive(vector<int> &elem_ID_list, int &point_counter, vector<vector<double>>& gaussPointsCoord, vector<vector<int>>& pointsIDPerElement, GetMesh mesh, vector<int> GaussPointID, vector<int> forceFourPoints)
 {
 	Messages messages;
 	messages.logMessage("Calculating Gauss points - Adaptive Process");
 	Operations oper;
 	ShapeFunctions shape;
 
+	vector<int> gaussPoints = {};
+	vector<int> elemsToRun;
 	if (elem_ID_list.size() == 0)
 	{
-
-		for (int elem = 0; elem < mesh.numElements; elem++)
-		{
-
-			int thisElemType = mesh.elemTypes[elem];
-
-			if (thisElemType >= 3)
-			{
-				GaussLegendrePoints thisElemGauss(thisElemType);
-				vector<int> thisPointsID;
-
-				for each (int gaussPoint in GaussPointID)
-				{
-
-					//UVP
-					vector<double>pFielduv;
-					pFielduv = thisElemGauss.pointsCoordinates.mat[gaussPoint];
-
-					//XYZ
-					vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, elem, mesh, pFielduv);
-
-					gaussPointsCoord.push_back(pFieldxy);
-					thisPointsID.push_back(point_counter);
-
-					if (pointsIDPerElement.size() <= elem)
-						pointsIDPerElement.push_back(thisPointsID);
-					else
-						pointsIDPerElement[elem].push_back(point_counter);
-
-					point_counter++;
-				}
-				elem_ID_list.push_back(elem);
-
-			}
-
-		}
+		GaussPointID = { 0 };
+		vector<int> elemsToRunSeq(mesh.numElements);
+		iota(elemsToRunSeq.begin(), elemsToRunSeq.end(), 0);
+		elem_ID_list = elemsToRunSeq;
 	}
-	else
+
+
+	for each (int elem in elem_ID_list)
 	{
-		for each (int elem in elem_ID_list)
+		if (std::find(forceFourPoints.begin(), forceFourPoints.end(), mesh.elementaryTags[elem, 1]) != forceFourPoints.end())
 		{
-
-			int thisElemType = mesh.elemTypes[elem];
-
-			if (thisElemType >= 3)
-			{
-				GaussLegendrePoints thisElemGauss(thisElemType);
-				vector<int> thisPointsID;
-
-				for each (int gaussPoint in GaussPointID)
-				{
-
-					//UVP
-					vector<double>pFielduv;
-					pFielduv = thisElemGauss.pointsCoordinates.mat[gaussPoint];
-
-					//XYZ
-					vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, elem, mesh, pFielduv);
-
-					gaussPointsCoord.push_back(pFieldxy);
-					thisPointsID.push_back(point_counter);
-
-					if (pointsIDPerElement.size() <= elem)
-						pointsIDPerElement.push_back(thisPointsID);
-					else
-						pointsIDPerElement[elem].push_back(point_counter);
-
-					point_counter++;
-				}
-
-			}
-
+			GaussPointID = { 0,1,2,3,4 };
 		}
 
+		int thisElemType = mesh.elemTypes[elem];
+		GaussLegendrePoints thisElemGauss(thisElemType);
+		vector<int> thisPointsID;
+		for each (int gaussPoint in GaussPointID)
+		{
+
+			//UVP
+			vector<double>pFielduv;
+			pFielduv = thisElemGauss.pointsCoordinates.mat[gaussPoint];
+
+			//XYZ
+			vector<double> pFieldxy = oper.scalLocalToReal(thisElemType, elem, mesh, pFielduv);
+
+			gaussPointsCoord.push_back(pFieldxy);
+			thisPointsID.push_back(point_counter);
+
+			if (pointsIDPerElement.size() < mesh.num3DElements)
+				pointsIDPerElement.push_back(thisPointsID);
+			else
+				pointsIDPerElement[elem].push_back(point_counter);
+
+			point_counter++;
+		}
 	}
-
-
-
-
 
 	messages.logMessage("Calculating Gauss points - Adaptive Process: Done");
 }
